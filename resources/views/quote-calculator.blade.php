@@ -151,24 +151,43 @@
                 <label>Branding (applies to THIS package item)</label>
                 <select id="bran"></select>
               </div>
+              <div>
+                <label>Advance Setup Mode</label>
+                <select id="advanceMode" class="input-field">
+                  <option value="">Select mode...</option>
+                  <option value="dropdown">Dropdown Selection</option>
+                  <option value="manual">Manual Input</option>
+                </select>
 
+                <div class="mt8" id="advanceDropdownWrap" style="display:none;">
+                  <label>Advance Setup</label>
+                  <select id="advanceSelect"></select>
+                </div>
+
+                <div class="mt8" id="advanceManualWrap" style="display:none;">
+                  <label>Advance Setup Name</label>
+                  <input type="text" id="advanceManualName" placeholder="Enter advance setup name" class="input-field" />
+
+                  <label class="mt8">Advance Setup Price</label>
+                  <input type="number" id="advanceManualPrice" placeholder="Enter price" min="0" class="input-field" />
+
+                  <label class="mt8">Advance Setup Note</label>
+                  <input type="text" id="advanceManualNote" placeholder="Enter note" class="input-field" />
+                </div>
+
+                <div class="mt8" id="advanceDateBox" style="display:none;">
+                  <label style="margin:0;">Select Advance Setup Date</label>
+                  <input type="date" id="advanceDate" />
+                </div>
+              </div>
+             
               <div>
                 <label>Notes (optional)</label>
                 <input id="notes" type="text" placeholder="special requests..." />
               </div>
             </div>
 
-            {{-- Step 4 --}}
-            <h2>4) Advance Setup (applies to THIS package item)</h2>
-
-            <label>Advance Setup</label>
-            <select id="advanceSelect"></select>
-
-            <div class="mt8" id="advanceDateBox" style="display:none;">
-              <label style="margin:0;">Select Advance Setup Date</label>
-              <input type="date" id="advanceDate" />
-            </div>
-
+        
             {{-- Step 5 --}}
             <h2 style="margin-top:30px;">5) Optional add-ons (applies to THIS package item)</h2>
             <div id="addonsBox"></div>
@@ -262,9 +281,15 @@ const discountValueInput = document.getElementById('discountValue');
 const resetBtn = document.getElementById('reset');
 const copyBtn  = document.getElementById('copy');
 
-const advanceSelectEl = document.getElementById('advanceSelect');
-const advanceDateBox  = document.getElementById('advanceDateBox');
-const advanceDateEl   = document.getElementById('advanceDate');
+const advanceModeEl        = document.getElementById('advanceMode');
+const advanceSelectEl      = document.getElementById('advanceSelect');
+const advanceDropdownWrap  = document.getElementById('advanceDropdownWrap');
+const advanceManualWrap    = document.getElementById('advanceManualWrap');
+const advanceManualNameEl  = document.getElementById('advanceManualName');
+const advanceManualPriceEl = document.getElementById('advanceManualPrice');
+const advanceManualNoteEl  = document.getElementById('advanceManualNote');
+const advanceDateBox       = document.getElementById('advanceDateBox');
+const advanceDateEl        = document.getElementById('advanceDate');
 
 /** =========================
  *  STATE
@@ -382,11 +407,51 @@ function initAdvanceSelect() {
   });
 
   advanceTS.on('change', () => {
-    const val = advanceTS.getValue();
-    const hasAny = !!val;
-    advanceDateBox.style.display = hasAny ? 'block' : 'none';
-    if (!hasAny) advanceDateEl.value = '';
+    if (advanceModeEl.value === 'dropdown') {
+      const val = advanceTS.getValue();
+      const hasAny = !!val;
+      advanceDateBox.style.display = hasAny ? 'block' : 'none';
+      if (!hasAny) advanceDateEl.value = '';
+    }
   });
+}
+
+/** =========================
+ *  ADVANCE MODE UI
+ *  ========================= */
+function toggleAdvanceModeUI() {
+  const mode = advanceModeEl.value;
+
+  if (mode === 'dropdown') {
+    advanceDropdownWrap.style.display = 'block';
+    advanceManualWrap.style.display = 'none';
+
+    const val = advanceTS ? advanceTS.getValue() : advanceSelectEl.value;
+    advanceDateBox.style.display = val ? 'block' : 'none';
+
+    advanceManualNameEl.value = '';
+    advanceManualPriceEl.value = '';
+    advanceManualNoteEl.value = '';
+  } else if (mode === 'manual') {
+    advanceDropdownWrap.style.display = 'none';
+    advanceManualWrap.style.display = 'block';
+    advanceDateBox.style.display = 'block';
+
+    if (advanceTS) advanceTS.setValue("", true);
+    else advanceSelectEl.value = "";
+  } else {
+    advanceDropdownWrap.style.display = 'none';
+    advanceManualWrap.style.display = 'none';
+    advanceDateBox.style.display = 'none';
+
+    if (advanceTS) advanceTS.setValue("", true);
+    else advanceSelectEl.value = "";
+
+    advanceManualNameEl.value = '';
+    advanceManualPriceEl.value = '';
+    advanceManualNoteEl.value = '';
+    advanceDateEl.value = '';
+  }
 }
 
 /** =========================
@@ -558,6 +623,7 @@ function getPackageExtraHourRate(pkgOrItem) {
 
   return 0;
 }
+
 function getItemExtraHourRate(item) {
   return getPackageExtraHourRate(item);
 }
@@ -784,13 +850,21 @@ function clearFormSelections() {
 
   locSelect.value = '';
 
+  advanceModeEl.value = '';
+
   if (advanceTS) {
     advanceTS.setValue("", true);
   } else {
     advanceSelectEl.value = "";
   }
 
+  advanceDropdownWrap.style.display = "none";
+  advanceManualWrap.style.display = "none";
   advanceDateBox.style.display = "none";
+
+  advanceManualNameEl.value = "";
+  advanceManualPriceEl.value = "";
+  advanceManualNoteEl.value = "";
   advanceDateEl.value = "";
 
   addonsBoxEl.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
@@ -811,6 +885,7 @@ function clearFormSelections() {
   document.getElementById('autoEnd').value = '14:00';
 
   toggleDateModeUI();
+  toggleAdvanceModeUI();
   renderDateList();
   renderManualTimes();
 }
@@ -850,17 +925,30 @@ function setFormFromItem(item) {
   else brandSelect.value = brId;
 
   const advOne = (item.addons || []).find(a => a.type === 'advance');
-  const advId = advOne ? String(advOne.id) : "";
 
-  if (advanceTS) advanceTS.setValue(advId, true);
-  else advanceSelectEl.value = advId;
+  if (advOne) {
+    if (advOne.isManual) {
+      advanceModeEl.value = 'manual';
+      toggleAdvanceModeUI();
 
-  if (advOne && advOne.selectedDate) {
-    advanceDateBox.style.display = 'block';
-    advanceDateEl.value = advOne.selectedDate;
+      advanceManualNameEl.value = advOne.name || '';
+      advanceManualPriceEl.value = advOne.price || '';
+      advanceManualNoteEl.value = advOne.note || '';
+      advanceDateEl.value = advOne.selectedDate || '';
+    } else {
+      advanceModeEl.value = 'dropdown';
+      toggleAdvanceModeUI();
+
+      const advId = String(advOne.id || "");
+      if (advanceTS) advanceTS.setValue(advId, true);
+      else advanceSelectEl.value = advId;
+
+      advanceDateEl.value = advOne.selectedDate || '';
+      advanceDateBox.style.display = 'block';
+    }
   } else {
-    advanceDateBox.style.display = 'none';
-    advanceDateEl.value = '';
+    advanceModeEl.value = '';
+    toggleAdvanceModeUI();
   }
 
   const addonIds = new Set((item.addons || []).filter(a => a.type === 'addon').map(a => String(a.id)));
@@ -921,7 +1009,12 @@ function updateSummary() {
     selectedItems.forEach((it, idx) => {
       const locTxt = (it.locations || []).map(x => x.name).join(', ') || '-';
       const brTxt  = (it.branding || []).map(x => x.name).join(', ') || '-';
-      const adTxt  = (it.addons || []).map(a => a.selectedDate ? `${a.name} - ${formatDate(a.selectedDate)}` : a.name).join(', ') || '-';
+      const adTxt  = (it.addons || []).map(a => {
+        const noteText = a.note ? ` (${a.note})` : '';
+        return a.selectedDate
+          ? `${a.name}${noteText} - ${formatDate(a.selectedDate)}`
+          : `${a.name}${noteText}`;
+      }).join(', ') || '-';
 
       itemsListHtml += `
         <tr>
@@ -1011,7 +1104,8 @@ function updateSummary() {
       });
 
       (item.addons || []).forEach(a => {
-        const title = a.selectedDate ? `${a.name} - ${formatDate(a.selectedDate)}` : a.name;
+        const noteText = a.note ? ` (${a.note})` : '';
+        const title = a.selectedDate ? `${a.name}${noteText} - ${formatDate(a.selectedDate)}` : `${a.name}${noteText}`;
         rows += `
           <tr>
             <td></td>
@@ -1122,22 +1216,56 @@ addPkgBtn.onclick = () => {
 
   const itemAddons = [];
 
-  const selectedAdvanceId = advanceTS ? advanceTS.getValue() : advanceSelectEl.value;
-  if (selectedAdvanceId) {
-    const advDate = advanceDateEl.value || null;
-    if (!advDate) {
-      alert("Please select date for Advance Setup");
-      return;
-    }
+  if (advanceModeEl.value === 'dropdown') {
+    const selectedAdvanceId = advanceTS ? advanceTS.getValue() : advanceSelectEl.value;
 
-    const a = ADVANCE_SETUPS.find(x => String(x.id) === String(selectedAdvanceId));
-    if (a) {
+    if (selectedAdvanceId) {
+      const advDate = advanceDateEl.value || null;
+      if (!advDate) {
+        alert("Please select date for Advance Setup");
+        return;
+      }
+
+      const a = ADVANCE_SETUPS.find(x => String(x.id) === String(selectedAdvanceId));
+      if (a) {
+        itemAddons.push({
+          id: a.id,
+          name: a.name,
+          price: Number(a.price),
+          selectedDate: advDate,
+          type: 'advance',
+          isManual: false,
+          note: ''
+        });
+      }
+    }
+  }
+
+  if (advanceModeEl.value === 'manual') {
+    const manualName = (advanceManualNameEl.value || '').trim();
+    const manualPrice = Number(advanceManualPriceEl.value || 0);
+    const manualNote = (advanceManualNoteEl.value || '').trim();
+    const advDate = advanceDateEl.value || null;
+
+    if (manualName || manualPrice || manualNote || advDate) {
+      if (!manualName) {
+        alert("Please enter Advance Setup name");
+        return;
+      }
+
+      if (!advDate) {
+        alert("Please select date for Advance Setup");
+        return;
+      }
+
       itemAddons.push({
-        id: a.id,
-        name: a.name,
-        price: Number(a.price),
+        id: 'manual-advance',
+        name: manualName,
+        price: manualPrice,
         selectedDate: advDate,
-        type: 'advance'
+        type: 'advance',
+        isManual: true,
+        note: manualNote
       });
     }
   }
@@ -1172,22 +1300,22 @@ addPkgBtn.onclick = () => {
     };
   });
 
-const snapshot = {
-  pkgId: pkg.id,
-  name: pkg.name,
-  desc: pkg.desc || "",
-  price: Number(pkg.price),
-  includedHours: Number(pkg.included_hours || 4),
-  extraHourRate: Number(getPackageExtraHourRate(pkg) || 0),
-  qty,
-  dateMode: getDateMode(),
-  locations: itemLocs,
-  branding: itemBrands,
-  addons: itemAddons,
-  hours: Array.isArray(pkg.hours) ? pkg.hours : [],
-  savedDates: normalizedDates,
-  timesByDate
-};
+  const snapshot = {
+    pkgId: pkg.id,
+    name: pkg.name,
+    desc: pkg.desc || "",
+    price: Number(pkg.price),
+    includedHours: Number(pkg.included_hours || 4),
+    extraHourRate: Number(getPackageExtraHourRate(pkg) || 0),
+    qty,
+    dateMode: getDateMode(),
+    locations: itemLocs,
+    branding: itemBrands,
+    addons: itemAddons,
+    hours: Array.isArray(pkg.hours) ? pkg.hours : [],
+    savedDates: normalizedDates,
+    timesByDate
+  };
 
   if (editingItemId) {
     const idx = selectedItems.findIndex(x => x.id === editingItemId);
@@ -1261,6 +1389,7 @@ document.getElementById('autoEnd').addEventListener('change', updateSummary);
 
 singleDayMode.addEventListener('change', toggleDateModeUI);
 multipleDayMode.addEventListener('change', toggleDateModeUI);
+advanceModeEl.addEventListener('change', toggleAdvanceModeUI);
 
 /** =========================
  *  RESET
@@ -1297,11 +1426,13 @@ if (advanceTS) advanceTS.setValue('', true);
 locSelect.value = '';
 
 toggleDateModeUI();
+toggleAdvanceModeUI();
 renderDateList();
 renderManualTimes();
 setEditingMode(false);
 updateSummary();
 </script>
+
 <script>
 copyBtn.addEventListener('click', async () => {
   const { jsPDF } = window.jspdf;
@@ -1524,27 +1655,29 @@ copyBtn.addEventListener('click', async () => {
         fmt(br.price)
       ]);
     });
-
+  
     (item.addons || []).forEach(a => {
-      const isAdvance =
-        a.type === 'advance' ||
-        String(a.name).trim().toUpperCase().includes("ADVANCE");
+    const isAdvance =
+      a.type === 'advance' ||
+      String(a.name).trim().toUpperCase().includes("ADVANCE");
 
-      const title = isAdvance && a.selectedDate
-        ? `${a.name} - ${formatDate(a.selectedDate)}`
-        : a.name;
+    const noteText = a.note ? ` (${a.note})` : '';
 
-      const addonDuration = isAdvance ? "2 hours" : "";
+    const title = isAdvance && a.selectedDate
+      ? `${a.name}${noteText} - ${formatDate(a.selectedDate)}`
+      : `${a.name}${noteText}`;
 
-      body.push([
-        "",
-        title,
-        "1",
-        addonDuration,
-        fmt(a.price),
-        fmt(a.price)
-      ]);
-    });
+    const addonDuration = isAdvance ? "2 hours" : "";
+
+    body.push([
+      "",
+      title,
+      "1",
+      addonDuration,
+      fmt(a.price),
+      fmt(a.price)
+    ]);
+  });
 
     const extraHourRows = getItemExtraHoursBreakdown(item).filter(ex => ex.extraHours > 0);
 

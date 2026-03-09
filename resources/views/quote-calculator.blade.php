@@ -1308,7 +1308,7 @@ copyBtn.addEventListener('click', async () => {
     year: 'numeric'
   }).toUpperCase();
 
-  const logoBase64 = await loadImage('/assets/images/logo2.png');
+  const logoBase64 = await loadImage('/assets/images/logo.jpg');
 
   function drawHeader() {
     doc.setFillColor(255, 255, 255);

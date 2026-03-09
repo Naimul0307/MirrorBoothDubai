@@ -24,23 +24,33 @@ class QuoteController extends Controller
         $brands = Brand::where('status',1)->orderBy('id','asc')->get();
 
 
-        $packagesData = $packages->map(function($p) {
+$packagesData = $packages->map(function($p) {
+    $extraHourRate = 0;
+
+    if ($p->hours && $p->hours->count()) {
+        $firstHourWithPrice = $p->hours->firstWhere('price', '!=', null);
+        if ($firstHourWithPrice) {
+            $extraHourRate = (float) $firstHourWithPrice->price;
+        }
+    }
+
+    return [
+        'id' => $p->id,
+        'name' => $p->name,
+        'price' => (float) $p->price,
+        'included_hours' => (float) ($p->included_hours ?? 4),
+        'extra_hour_rate' => $extraHourRate,
+        'desc' => $p->description ?? '',
+        'brands' => $p->brands->pluck('id')->toArray(),
+        'hours' => $p->hours->map(function($h) {
             return [
-                'id' => $p->id,
-                'name' => $p->name,
-                'price' => $p->price,
-                'included_hours' => (float) ($p->included_hours ?? 4),
-                'desc' => $p->description ?? '',
-                'brands' => $p->brands->pluck('id')->toArray(),
-                'hours' => $p->hours->map(function($h) {
-                    return [
-                        'id' => $h->id,
-                        'name' => $h->name,
-                        'price' => (float) $h->price,
-                    ];
-                })->values()->toArray(),
+                'id' => $h->id,
+                'name' => $h->name,
+                'price' => (float) $h->price,
             ];
-        })->toArray();
+        })->values()->toArray(),
+    ];
+})->toArray();
 
         $locationsData = $locations->map(function($l) {
             return [

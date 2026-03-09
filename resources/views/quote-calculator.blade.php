@@ -285,6 +285,12 @@ let advanceTS = null;
  *  ========================= */
 function populateDropdowns() {
   pkgSelect.innerHTML = '';
+
+  const pkgEmpty = document.createElement('option');
+  pkgEmpty.value = '';
+  pkgEmpty.textContent = 'Select package...';
+  pkgSelect.appendChild(pkgEmpty);
+
   PACKAGES.forEach(p => {
     const opt = document.createElement('option');
     opt.value = String(p.id);
@@ -293,6 +299,12 @@ function populateDropdowns() {
   });
 
   locSelect.innerHTML = '';
+
+  const locEmpty = document.createElement('option');
+  locEmpty.value = '';
+  locEmpty.textContent = 'Select location...';
+  locSelect.appendChild(locEmpty);
+
   LOCATIONS.forEach(l => {
     const opt = document.createElement('option');
     opt.value = String(l.id);
@@ -301,6 +313,12 @@ function populateDropdowns() {
   });
 
   brandSelect.innerHTML = '';
+
+  const brandEmpty = document.createElement('option');
+  brandEmpty.value = '';
+  brandEmpty.textContent = 'Select branding...';
+  brandSelect.appendChild(brandEmpty);
+
   BRANDING.forEach(b => {
     const opt = document.createElement('option');
     opt.value = String(b.id);
@@ -519,28 +537,27 @@ function getExtraHoursCount(item, duration) {
 function getPackageExtraHourRate(pkgOrItem) {
   if (!pkgOrItem) return 0;
 
-  if (pkgOrItem.extraHourRate != null) {
-    return Number(pkgOrItem.extraHourRate || 0);
+  if (pkgOrItem.extraHourRate != null && !isNaN(Number(pkgOrItem.extraHourRate))) {
+    return Number(pkgOrItem.extraHourRate);
+  }
+
+  if (pkgOrItem.extra_hour_rate != null && !isNaN(Number(pkgOrItem.extra_hour_rate))) {
+    return Number(pkgOrItem.extra_hour_rate);
+  }
+
+  if (pkgOrItem.extra_hour_price != null && !isNaN(Number(pkgOrItem.extra_hour_price))) {
+    return Number(pkgOrItem.extra_hour_price);
   }
 
   if (Array.isArray(pkgOrItem.hours) && pkgOrItem.hours.length) {
-    return Number(pkgOrItem.hours[0]?.price || 0);
-  }
-
-  if (pkgOrItem.hours && typeof pkgOrItem.hours === 'object') {
-    const firstKey = Object.keys(pkgOrItem.hours)[0];
-    if (firstKey && pkgOrItem.hours[firstKey]?.price != null) {
-      return Number(pkgOrItem.hours[firstKey].price || 0);
+    const found = pkgOrItem.hours.find(h => h && h.price != null && !isNaN(Number(h.price)));
+    if (found) {
+      return Number(found.price);
     }
-  }
-
-  if (pkgOrItem.extra_hour_price != null) {
-    return Number(pkgOrItem.extra_hour_price || 0);
   }
 
   return 0;
 }
-
 function getItemExtraHourRate(item) {
   return getPackageExtraHourRate(item);
 }
@@ -754,19 +771,24 @@ function clearFormSelections() {
   document.getElementById('pkgQty').value = 1;
 
   if (pkgTS) {
-    const firstPkgValue = pkgSelect.options.length ? pkgSelect.options[0].value : '';
-    pkgTS.setValue(firstPkgValue, true);
+    pkgTS.setValue('', true);
+  } else {
+    pkgSelect.value = '';
   }
 
   if (branTS) {
-    const firstBrandValue = brandSelect.options.length ? brandSelect.options[0].value : '';
-    branTS.setValue(firstBrandValue, true);
+    branTS.setValue('', true);
+  } else {
+    brandSelect.value = '';
   }
 
-  if (locSelect.options.length) locSelect.selectedIndex = 0;
+  locSelect.value = '';
 
-  if (advanceTS) advanceTS.setValue("", true);
-  else advanceSelectEl.value = "";
+  if (advanceTS) {
+    advanceTS.setValue("", true);
+  } else {
+    advanceSelectEl.value = "";
+  }
 
   advanceDateBox.style.display = "none";
   advanceDateEl.value = "";
@@ -779,9 +801,14 @@ function clearFormSelections() {
   singleDateInput.value = '';
   multiStartDate.value = '';
   multiEndDate.value = '';
+
   autoRadio.checked = true;
+  manualRadio.checked = false;
   autoBox.classList.remove('hide');
   manualBox.classList.add('hide');
+
+  document.getElementById('autoStart').value = '10:00';
+  document.getElementById('autoEnd').value = '14:00';
 
   toggleDateModeUI();
   renderDateList();
@@ -812,8 +839,11 @@ function setFormFromItem(item) {
 
   document.getElementById('pkgQty').value = item.qty || 1;
 
-  if (item.locations && item.locations.length) locSelect.value = String(item.locations[0].id);
-  else if (locSelect.options.length) locSelect.selectedIndex = 0;
+  if (item.locations && item.locations.length) {
+    locSelect.value = String(item.locations[0].id);
+  } else {
+    locSelect.value = '';
+  }
 
   const brId = (item.branding && item.branding.length) ? String(item.branding[0].id) : '';
   if (branTS) branTS.setValue(brId, true);
@@ -1082,7 +1112,11 @@ addPkgBtn.onclick = () => {
   const pkgId = pkgTS ? pkgTS.getValue() : pkgSelect.value;
   const pkg = PACKAGES.find(p => String(p.id) === String(pkgId));
   const qty = parseInt(document.getElementById('pkgQty').value) || 1;
-  if (!pkg) return;
+
+  if (!pkg) {
+    alert("Please select a package.");
+    return;
+  }
 
   const itemAddons = [];
 
@@ -1135,23 +1169,25 @@ addPkgBtn.onclick = () => {
       end: uiTime.end || '14:00'
     };
   });
+console.log('Selected package full data:', pkg);
+console.log('Extra hour rate found:', getPackageExtraHourRate(pkg));
 
-  const snapshot = {
-    pkgId: pkg.id,
-    name: pkg.name,
-    desc: pkg.desc || "",
-    price: Number(pkg.price),
-    includedHours: Number(pkg.included_hours || 4),
-    extraHourRate: getPackageExtraHourRate(pkg),
-    qty,
-    dateMode: getDateMode(),
-    locations: itemLocs,
-    branding: itemBrands,
-    addons: itemAddons,
-    hours: Array.isArray(pkg.hours) ? pkg.hours : [],
-    savedDates: normalizedDates,
-    timesByDate
-  };
+const snapshot = {
+  pkgId: pkg.id,
+  name: pkg.name,
+  desc: pkg.desc || "",
+  price: Number(pkg.price),
+  includedHours: Number(pkg.included_hours || 4),
+  extraHourRate: Number(getPackageExtraHourRate(pkg) || 0),
+  qty,
+  dateMode: getDateMode(),
+  locations: itemLocs,
+  branding: itemBrands,
+  addons: itemAddons,
+  hours: Array.isArray(pkg.hours) ? pkg.hours : [],
+  savedDates: normalizedDates,
+  timesByDate
+};
 
   if (editingItemId) {
     const idx = selectedItems.findIndex(x => x.id === editingItemId);
@@ -1255,13 +1291,17 @@ initSearchSelects();
 initAdvanceSelect();
 renderAddonsCheckboxes();
 
+if (pkgTS) pkgTS.setValue('', true);
+if (branTS) branTS.setValue('', true);
+if (advanceTS) advanceTS.setValue('', true);
+locSelect.value = '';
+
 toggleDateModeUI();
 renderDateList();
 renderManualTimes();
 setEditingMode(false);
 updateSummary();
 </script>
-
 <script>
 copyBtn.addEventListener('click', async () => {
   const { jsPDF } = window.jspdf;

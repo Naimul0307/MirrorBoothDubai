@@ -972,10 +972,12 @@ function updateSummary() {
 
       let rows = `
         <tr>
-          <td>${getDateRangeText(item)}</td>
+          <td>
+            ${getDateRangeText(item)}
+            <div style="margin-top:4px; font-size:12px;">${getTotalDays(item)} day(s)</div>
+          </td>
           <td>
             <b>${item.name}</b>
-            <div style="margin-top:4px; font-size:12px;">${getTotalDays(item)} day(s)</div>
             ${descHtml}
           </td>
           <td class="right">${Number(item.qty)}</td>
@@ -1169,8 +1171,6 @@ addPkgBtn.onclick = () => {
       end: uiTime.end || '14:00'
     };
   });
-console.log('Selected package full data:', pkg);
-console.log('Extra hour rate found:', getPackageExtraHourRate(pkg));
 
 const snapshot = {
   pkgId: pkg.id,
@@ -1488,12 +1488,14 @@ copyBtn.addEventListener('click', async () => {
     const body = [];
 
     const bullets = makeBulletLines(item.desc || "");
-    const descParts = [item.name, `${getTotalDays(item)} day(s)`];
+    const descParts = [item.name];
     if (bullets.length) descParts.push(...bullets);
 
     const descCell = descParts.join("\n");
+    const dateCell = `${getDateRangeText(item)}\n${getTotalDays(item)} day(s)`;
+
     body.push([
-      getDateRangeText(item),
+      dateCell,
       descCell,
       String(Number(item.qty)),
       formatIncludedHours(item),

@@ -1,0 +1,970 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    font-family: 'Roboto', sans-serif;
+    color: #6F8BA4;
+    background-color: #222;
+    overflow: auto; /* For Firefox */
+    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+    scrollbar-width: none;
+}
+
+.divider-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically, if needed */
+}
+
+.divider {
+    width: 100px;
+    height: 5px;
+    background: rgb(251,38,141);
+}
+
+.carousel-control-prev,
+.carousel-control-next{
+    z-index: 99;
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 */
+    overflow: hidden;
+}
+
+.responsive-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.section-2 {
+    background-color: rgb(209,19,115);
+}
+.section-2 .title-color {
+    color: #ffffff;
+}
+.section-2 .text-muted{
+    font-size: 25px;
+    text-align: center !important;
+}
+
+.section-2 h1 {
+    text-align: center !important;
+}
+.section-2 p {
+    text-align: center !important;
+    font-size: 20px;
+    color: #ffffff;
+}
+
+.text-muted{
+    color: #ffffff!important
+}
+
+.title-color {
+    color: rgb(209,19,115);
+    text-align: center !important;
+    font-size: 50px;
+    font-weight: 900;
+}
+
+.title-color a{
+    color: #ffffff;
+}
+.section-3 .title-color {
+    color: #FFF;
+}
+.image-red-background{
+    position: relative;
+}
+
+.section-3{
+    background-color: #050505;
+}
+
+
+.btn-primary{
+    background-color: rgb(209,19,115);
+    border-color: rgb(209,19,115);
+}
+
+.btn-primary:hover{
+    background-color: rgb(225, 36, 84, 0.8);
+    border-color: #e12454;
+    box-shadow: none;
+}
+
+.btn-primary:active{
+    background-color: rgb(225, 36, 84, 0.8);
+    border-color: #e12454;
+    box-shadow: none;
+}
+
+
+.btn-primary:focus{
+    background-color: rgb(225, 36, 84, 0.8);
+    border-color: #e12454;
+    box-shadow: none;
+}
+
+.section-6{
+    background-color: rgb(255,255,255);
+}
+
+.section-6 .cards{
+    position: relative;
+}
+
+
+.section-6 .cards .card{
+    width: 100%;
+}
+
+.section-6 .cards .card .card-title{
+    font-size: 24px;
+    color: #e12454;
+}
+
+.section-6.cards .card .card-title a{
+    color: #ffffff;
+}
+
+
+.section-6 .cards .card .btn-primary{
+    padding: 10px 25px;
+    text-transform: uppercase;
+}
+
+
+.section-4{
+    min-height: 300px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.section-4  .btn-primary{
+    padding: 10px 25px;
+    text-transform: uppercase;
+}
+
+.section-4  .btn-primary i{
+    margin-left: 10px;
+}
+
+.section-4 .title{
+    color: #FFF;
+}
+
+.section-4 .help-container{
+    z-index: 99;
+    position: relative;
+    padding-left: 100px;
+    padding-right: 100px;
+}
+
+.section-4 .help-container p{
+    color: rgb(255, 255, 255, 0.8);
+}
+
+.footer{
+    padding-top: 70px;
+    padding-bottom: 70px;
+}
+
+.footer.gray-bg{
+    background-color: #d9e1e6;
+    padding-bottom: 10px;
+}
+
+
+
+.footer-menu a {
+    color: #6F8BA4;
+    line-height: 35px;
+}
+
+.footer-socials li a {
+    width: 45px;
+    height: 45px;
+    background: #6F8BA4;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    border-radius: 100%;
+    padding-top: 12px;
+    margin-bottom: 10px;
+}
+
+
+.footer h4 {
+    color:#223a66;
+}
+.footer h4 a{
+    font-size: 16px;
+    color: #6F8BA4;
+}
+
+.footer h4 i{
+    font-size: 18px;
+}
+
+.accordion-item{
+    margin-bottom: 5px;
+}
+
+.accordion-item:first-of-type {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.accordion-item:last-of-type {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.accordion-item:not(:first-of-type) {
+    border-top: 1px solid rgba(0,0,0,.125);
+}
+
+.accordion-button:focus{
+    box-shadow:none;
+}
+
+.accordion-button{
+    background: rgb(0, 0, 0);
+    color:#FFF;
+}
+
+.accordion-button:not(.collapsed){
+    color: #FFF;
+    background-color: #000;
+}
+
+.accordion-item:first-of-type .accordion-button {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.accordion-button::after{
+    background-image: url("data:image/svg+xml,%0A%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23FFF'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+}
+
+.accordion-button:not(.collapsed)::after{
+    background-image: url("data:image/svg+xml,%0A%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23FFF'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+}
+
+.contact-box a{
+    color:#6F8BA4;
+}
+
+
+
+    .btn {
+        display: inline-block;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    /* Optional: Adjust h1 size */
+    h1 {
+        font-size: 1.5rem; /* You can adjust this size based on design */
+    }
+
+    /* Divider styling */
+    .divider-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .divider {
+        width: 250px;
+        height: 2px;
+        background-color: rgb(235, 10, 122);
+    }
+
+    .card {
+        max-width: 100% !important;
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        word-wrap: break-word !important;
+        background-color: #000000 !important;
+        background-clip: border-box !important;
+        border: 1px solid rgba(0, 0, 0, .125) !important;
+        border-radius: .25rem !important;
+        padding: 1rem;
+    }
+
+    .card-title a {
+        display: block !important;
+        text-align: center !important;
+        font-weight: bold !important;
+        color: #FFF !important;
+        font-size: 25px !important; /* Adjust font size as needed */
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        height: 2.5em !important; /* Ensure it takes up 2 lines of text */
+    }
+
+    .card-text {
+        font-size: 18px !important;
+        color: rgb(208, 211, 211) !important;
+        text-align: center !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        height: 6em !important; /* Ensure it takes up 3 lines of text */
+        overflow: hidden !important;
+    }
+
+.call-now a{
+    color:#FFF;
+}
+
+.card-one ul li a{
+    color: #FFF;
+}
+    /* Center content inside the card */
+.card-body {
+     text-align: center;
+}
+
+.section-8 {
+    background-color: white;
+}
+
+/* Shared styling block for image or video wrapper */
+.section-8 .image-red-background {
+    margin-bottom: 1.5rem;
+}
+
+/* Video wrapper: 16:9 aspect ratio using padding-top hack */
+.section-8 .video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 ratio */
+    overflow: hidden;
+}
+
+/* Responsive YouTube iframe inside .video-wrapper */
+.section-8 .responsive-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Image wrapper: display image naturally */
+.section-8 .image-wrapper {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.section-8 .image-wrapper img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    border-radius: 8px; /* Optional */
+}
+
+.slick-dots{
+    display: none !important;
+}
+
+/* Centering the entire section */
+.section-6 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* Center and stretch slider if fewer than 4 items */
+.services-slider.few-items {
+    justify-content: center;
+    overflow-x: hidden;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+
+/* Slider container */
+.services-slider {
+    position: relative;
+    display: flex; /* Use flexbox to display items in a row */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    scroll-behavior: smooth; /* Smooth scrolling */
+    gap: 20px; /* Space between each slider item */
+    padding: 10px; /* Optional padding around the container */
+    width: 100%; /* Full width of the container */
+    box-sizing: border-box; /* Include padding and border in total width */
+}
+
+/* Each slider item */
+.slider-item {
+    flex-shrink: 0 !important; /* Prevent the item from shrinking in a flex layout */
+    width: 250px !important;
+    height: 250px; /* Fixed height */
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: white;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex !important; /* Center image inside */
+    align-items: center;
+    justify-content: center;
+}
+
+.slider-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Fills the container while maintaining aspect ratio */
+    border-radius: 10px;
+    display: block; /* Removes bottom spacing for images */
+}
+
+.slider-item:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+    z-index: 1; /* Bring the hovered image to the front */
+}
+
+
+.slick-prev i,
+.slick-next i {
+    margin-top: 90px;
+    padding: 10px;
+    font-size: 30px;
+    color: rgb(215 44 95);
+    transition: color 0.3s ease;
+}
+
+/* Change icon color when hovered */
+.slick-prev:hover i,
+.slick-next:hover i {
+    color: rgb(245, 56, 113);
+}
+
+
+/* WhatsApp Button CSS */
+.whatsapp-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #25D366; /* WhatsApp green color */
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
+    z-index: 1000; /* Ensure it stays on top */
+    animation: blink-animation 1s infinite; /* Apply the animation */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.whatsapp-button:hover {
+    background-color: #128C7E; /* Darker green on hover */
+}
+
+.whatsapp-button img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.custom-link {
+    color: #6F8BA4;
+    font-weight: bold;
+}
+
+.custom-link:hover {
+    color: darkblue;
+}
+
+.blog-image {
+    width: 800px;
+    height: 500px;
+    display: block;
+    margin: 0 auto; /* center the image */
+}
+
+
+.section-6 {
+    background: linear-gradient(to bottom, #f9fafb, #ffffff);
+    padding: 60px 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.section-6 .wrap {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.section-6 h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #f8faff;
+}
+
+.section-6 h1 .muted {
+    font-weight: 400;
+    font-size: 0.9rem;
+}
+
+.section-6 .card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    padding: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.section-6 .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.section-6 .card h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f5f6f8;
+    margin-bottom: 1rem;
+}
+
+.section-6 label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #fdfeff;
+    margin-bottom: 0.3rem;
+    display: block;
+}
+
+.section-6 select,
+.section-6 input[type="text"],
+.section-6 input[type="date"],
+.section-6 input[type="time"],
+.section-6 input[type="number"] {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.section-6 select:focus,
+.section-6 input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+}
+
+.section-6 .btn {
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.section-6 .btn.primary {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+}
+
+.section-6 .btn.small {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.78rem;
+}
+
+.section-6 .btn.danger {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: white;
+}
+
+.section-6 .btn:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+}
+
+.section-6 .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #d1d5db;
+    border-radius: 20px;
+    padding: 0.4rem 0.8rem;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.section-6 .pill:hover {
+    border-color: #2563eb;
+}
+
+.section-6 .pill label {
+    color: #111827;
+}
+
+.section-6 .list .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.section-6 #summary table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.section-6 #summary th,
+.section-6 #summary td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.section-6 #summary .right {
+    text-align: right;
+    font-weight: 600;
+}
+
+.section-6 .grid {
+    display: grid;
+}
+
+.section-6 .g2 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.section-6 .g3 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.section-6 .mt8 { margin-top: 8px; }
+.section-6 .mt12 { margin-top: 12px; }
+.section-6 .mt16 { margin-top: 16px; }
+
+.section-6 .muted { color: #edeff1; }
+.section-6 .hide { display: none; }
+.section-6 .row { display: flex; gap: 8px; }
+
+.section-6 #addons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.section-6 .addon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.section-6 .addon-item:hover {
+    border-color: #2563eb;
+    background: #f9fbff;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.1);
+}
+
+.section-6 .addon-item.selected {
+    border-color: #2563eb;
+    background: #161618;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.15);
+}
+
+.section-6 .addon-item label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+    cursor: pointer;
+}
+
+.section-6 .addon-item .desc {
+    font-size: 0.85rem;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+
+/* Keyframes for blinking effect */
+@keyframes blink-animation {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/* For screens smaller than 1200px */
+@media (min-width: 1000px) and (max-width: 1200px)  {
+    .divider {
+        margin-left: 0; /* Adjust margin for smaller screens */
+    }
+
+    .section-2 .text-muted {
+        font-size: 20px; /* Adjust font size */
+    }
+
+    .title-color {
+        font-size: 40px; /* Adjust title font size */
+    }
+
+    .card-title a {
+        font-size: 20px !important; /* Further reduce font size */
+    }
+
+    .card-text {
+        font-size: 20px !important;
+    }
+}
+
+/* For screens smaller than 768px */
+@media (min-width: 700px) and (max-width: 900px) {
+    .section-2 .text-muted {
+        font-size: 18px; /* Further adjust font size */
+    }
+
+    .title-color {
+        font-size: 30px; /* Further adjust title font size */
+    }
+
+    .section-4 .help-container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .about-block {
+        font-size: 1.1rem;
+    }
+
+    .close {
+        font-size: 30px; /* Smaller close button on smaller screens */
+        top: 10px;
+        right: 20px;
+    }
+
+    .modal-content {
+        width: 95%; /* Adjust width for smaller screens */
+        max-width: 95%; /* Adjust max-width for smaller screens */
+        margin-top: 50px;
+    }
+
+    .instagram-gallery .image {
+        margin: 5px; /* Reduce margin on smaller screens */
+    }
+
+    .instagram-gallery .image img {
+        max-width: 150px; /* Adjust max-width for smaller screens */
+    }
+    .card-title a {
+        font-size: 25px !important; /* Reduce font size for smaller screens */
+        height: 3.5em !important; /* Adjust height for 2 lines */
+    }
+
+    .card-text {
+        font-size: 23px !important;
+        height: 4.8em !important; /* Adjust height for 3 lines */
+    }
+
+    .slider-item {
+        width: 600px; /* Adjust size for tablets */
+        height: 200px; /* Adjust height for tablets */
+    }
+
+    .slick-prev,
+    .slick-next {
+        font-size: 18px;
+        padding: 8px;
+    }
+}
+
+/* For screens smaller than 480px */
+@media (min-width: 480px) and (max-width: 570px)  {
+    .divider {
+        width: 80px; /* Adjust width for very small screens */
+    }
+
+    .section-2 .text-muted {
+        font-size: 16px; /* Adjust font size for very small screens */
+    }
+
+    .title-color {
+        font-size: 25px; /* Adjust title font size for very small screens */
+    }
+
+    .section-4 .help-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .about-block {
+        font-size: 1rem;
+    }
+
+    .close {
+        font-size: 24px; /* Even smaller close button on extra small screens */
+        top: 5px;
+        right: 15px;
+    }
+
+    .modal-content {
+        width: 100%; /* Full width on mobile devices */
+        max-width: 100%; /* Full max-width on mobile devices */
+        margin-top: 50px;
+    }
+
+    .instagram-gallery .image img {
+        max-width: 100px; /* Further adjust max-width for very small screens */
+    }
+
+    .whatsapp-button {
+        font-size: 14px; /* Smaller font size for mobile */
+        padding: 8px 16px; /* Reduce padding */
+    }
+
+    .whatsapp-button img {
+        width: 30px; /* Smaller WhatsApp icon */
+        height: 30px; /* Smaller WhatsApp icon */
+    }
+    .card-title a {
+        font-size: 30px !important; /* Reduce font size for smaller screens */
+        height: 2.2em !important; /* Adjust height for 2 lines */
+    }
+
+    .card-text {
+        font-size: 23px !important;
+        height: 4.8em !important; /* Adjust height for 3 lines */
+        overflow: hidden;
+    }
+
+    .slider-item {
+        width: 300px; /* Adjust size for mobile */
+        height: 100px; /* Adjust height for mobile */
+    }
+
+    .slick-prev,
+    .slick-next {
+        font-size: 18px;
+        padding: 8px;
+    }
+}
+.section-4 .mt-4 {
+    margin-top: 6.5rem !important;
+}
+
+.section-4 .card-text {
+    margin-top: 125px;
+}
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+
+/* 📱 Small screens (phones) */
+@media (max-width: 480px) {
+    .loader {
+        width: 25vw;
+        height: 25vw;
+        max-width: 100px;
+        max-height: 100px;
+    }
+}
+
+/* 💻 Large desktops */
+@media (min-width: 1200px) {
+    .loader {
+        width: 15vw;
+        height: 15vw;
+        max-width: 180px;
+        max-height: 180px;
+    }
+}
+
+
+/* ===== 1) FIELD (the select box) background ===== */
+.ts-wrapper .ts-control{
+  background-color: #fff !important;   /* change to your input bg */
+  border: 1px solid #ced4da !important;
+  border-radius: .375rem !important;
+  padding: .375rem .75rem !important;
+  min-height: 38px !important;
+  box-shadow: none !important;
+}
+
+/* If your inputs are grey, use this instead */
+/* .ts-wrapper .ts-control{ background-color:#f7f7f7 !important; } */
+
+
+/* ===== 2) DROPDOWN (the options list) background ===== */
+.ts-dropdown{
+  background-color: #fff !important;   /* dropdown panel bg */
+  border: 1px solid #ced4da !important;
+  border-radius: .375rem !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08) !important;
+}
+
+/* each option row */
+.ts-dropdown .option{
+  background: transparent !important;
+  color: #212529 !important;
+}
+
+/* hover option */
+.ts-dropdown .option:hover,
+.ts-dropdown .active{
+  background: rgba(0,0,0,.06) !important;
+}
+
+/* selected option */
+.ts-dropdown .selected{
+  background: rgba(0,0,0,.10) !important;
+}

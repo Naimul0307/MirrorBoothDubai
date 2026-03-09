@@ -1,0 +1,378 @@
+/* Hero Section */
+.hero {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.hero .carousel-item {
+    height: 80vh; /* Reduce height for background video */
+}
+
+.hero .carousel-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.hero .hero-background-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.hero .container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    text-align: center;
+    padding: 10px;
+    max-width: 100%;
+}
+
+.hero .block h1 {
+    font-size: 3vw; /* Responsive font size */
+    font-weight: bolder;
+    line-height: 1.2;
+    color: #FFF;
+    max-width: 90%; /* Force heading into two lines */
+    margin: 0 auto; /* Center the heading */
+    white-space: normal; /* Ensure text can wrap */
+}
+
+.hero .btn-container {
+    margin-top: 20px;
+}
+
+.hero .btn-primary {
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+}
+
+
+/* General Styles */
+.nav-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    background-color: transparent; /* Start with transparent */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+    align-items: center;
+    position: fixed;
+    z-index: 40;
+}
+.dropdown-toggle::after{
+    display: none;
+}
+/* Desktop Style When Scrolled */
+.desktop-nav .nav-bar.scrolled {
+    background-color: black; /* Black background when scrolled */
+    transform: translateY(0); /* Ensure it's in the view */
+}
+
+.desktop-nav .logo img {
+    width: 200px;
+    margin-left: 50px;
+}
+
+/* Desktop Navbar */
+.desktop-nav {
+    display: flex;
+}
+
+/* Hide the menu in desktop view */
+.desktop-nav .menu {
+    display: flex;
+    list-style: none;
+    flex-wrap: wrap;
+    margin-right: 100px;
+}
+
+.desktop-nav .menu li {
+    padding-left: 30px;
+    position: relative;
+}
+
+.desktop-nav .menu li a {
+    text-decoration: none;
+    color: white;
+    text-transform: uppercase;
+    transition: 0.15s ease-in-out;
+}
+
+.desktop-nav .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: rgba(241, 106, 181, 0.767);
+    z-index: 50;
+}
+
+.desktop-nav .dropdown-menu li{
+    padding: 20px;
+}
+
+.desktop-nav .menu li:hover .dropdown-menu {
+    display: block;
+}
+
+
+.mobile-nav {
+    display: none;
+}
+
+/* Mobile Navbar Style When Scrolled */
+.mobile-nav .nav-bar.scrolled {
+    background-color: black; /* Change background color when scrolled */
+    transform: translateY(0); /* Ensure it's in the view */
+}
+
+.mobile-nav .nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--color2);
+}
+
+.mobile-nav .logo img {
+    width: 150px; /* Adjust logo size for mobile view */
+}
+
+.menu-toggle, .close-menu {
+    display: none;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+/* Close Button */
+.close-menu {
+    display: none; /* Hidden by default */
+    font-size: 1.5rem;
+    color: white;
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    z-index: 50; /* Ensure the close button is above the sidebar */
+}
+
+/* Toggle Button */
+.menu-toggle {
+    display: block; /* Show by default */
+    font-size: 1.5rem;
+    color: white;
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    z-index: 40; /* Ensure the toggle button is above other content */
+}
+
+.mobile-nav .menu {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    list-style: none;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 100vh;
+    background-color: black;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    z-index: 30;
+    align-items: center;
+}
+
+
+.mobile-nav .menu.show-menu {
+    display: flex;
+}
+
+.mobile-nav .menu li {
+    margin-top: 55px;
+    padding: 10px;
+    width: 100%; /* Ensure each menu item takes the full width */
+    text-align: center; /* Center the text */
+}
+
+.mobile-nav .menu li a {
+    color: white;
+    text-align: left; /* Ensure text is centered */
+    display: block; /* Make sure the links take up the full space */
+}
+
+.mobile-nav .menu .dropdown-menu {
+    display: none;
+    position: relative;
+    left: 0;
+    background-color: rgba(241, 106, 181, 0.767);
+    z-index: 50;
+}
+
+.mobile-nav .menu .dropdown-menu li{
+    padding: 10px;
+}
+
+.mobile-nav .menu li:hover .dropdown-menu{
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .desktop-nav {
+        display: none;
+    }
+
+    .mobile-nav {
+        display: block;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .close-menu {
+        display: none;
+    }
+
+    .mobile-nav .menu.show-menu .menu-toggle {
+        display: none;
+    }
+
+    .mobile-nav .menu.show-menu .close-menu {
+        display: block;
+    }
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 1000px) {
+    .hero .block h1 {
+        font-size: 5.5vw; /* Adjust font size for large tablets */
+        max-width: 80%; /* Ensure text still wraps on smaller screens */
+    }
+
+    .hero .btn-primary {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .hero .block h1 {
+        font-size: 6vw; /* Adjust font size for medium devices */
+        max-width: 80%; /* Adjust wrapping for medium screens */
+    }
+
+    .hero .btn-primary {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero .block h1 {
+        font-size: 8vw; /* Smaller heading for smaller screens */
+        max-width: 90%; /* More text wrapping for smaller screens */
+    }
+
+    .hero .btn-primary {
+        font-size: 0.9rem;
+        padding: 8px 16px; /* Adjust button size */
+    }
+}
+
+@media (max-width: 500px) {
+    .hero .block h1 {
+        font-size: 8vw; /* Larger but still proportional on small devices */
+    }
+
+    .hero .btn-primary {
+        font-size: 0.8rem;
+        padding: 6px 12px; /* Adjust button size */
+    }
+}
+        /* WhatsApp Button CSS */
+        .whatsapp-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #25D366; /* WhatsApp green color */
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+            z-index: 1000; /* Ensure it stays on top */
+        }
+        .whatsapp-button img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+
+.search-form {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.search-input {
+  height: 36px;
+  margin-left: 8px;
+  padding: 6px 12px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  background-color: #222;
+  color: white;
+  width: 200px;
+  transition: width 0.3s ease;
+}
+
+.search-submit-btn {
+  background-color: #f16ab5;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  margin-left: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Optional: focus style */
+.search-input:focus {
+  background-color: #333;
+  border: 1px solid #f16ab5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-input {
+    width: 150px;
+  }
+}

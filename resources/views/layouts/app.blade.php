@@ -34,7 +34,6 @@
         <!-- For higher resolution Android devices -->
         <link rel="icon" href="{{ asset('assets/android-chrome-512x512.png') }}" sizes="512x512" type="image/png">
 
-
         <meta name="_token" content="{{ csrf_token() }}">
     </head>
 <body>

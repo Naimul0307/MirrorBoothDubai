@@ -60,7 +60,6 @@
             </div>
           </div>
 
-          {{-- Step 1 --}}
           <div class="card">
             <h2>1) Dates</h2>
 
@@ -108,7 +107,6 @@
             </div>
           </div>
 
-          {{-- Step 2 --}}
           <div class="card">
             <h2>2) Timings</h2>
             <div class="row">
@@ -130,13 +128,15 @@
             <div id="manualBox" class="mt12 hide"></div>
           </div>
 
-          {{-- Step 3 --}}
           <div class="card">
             <h2>3) Choose a package</h2>
             <div class="g3">
               <div>
                 <label>Package</label>
                 <select id="pkg"></select>
+
+                <label class="mt8">Package Time</label>
+                <select id="packageTime"></select>
 
                 <label class="mt8">Quantity</label>
                 <input type="number" id="pkgQty" min="1" value="1">
@@ -151,6 +151,7 @@
                 <label>Branding (applies to THIS package item)</label>
                 <select id="bran"></select>
               </div>
+
               <div>
                 <label>Advance Setup Mode</label>
                 <select id="advanceMode" class="input-field">
@@ -180,19 +181,16 @@
                   <input type="date" id="advanceDate" />
                 </div>
               </div>
-             
+
               <div>
                 <label>Notes (optional)</label>
                 <input id="notes" type="text" placeholder="special requests..." />
               </div>
             </div>
 
-        
-            {{-- Step 5 --}}
             <h2 style="margin-top:30px;">5) Optional add-ons (applies to THIS package item)</h2>
             <div id="addonsBox"></div>
 
-            {{-- Step 6 --}}
             <h2 class="mt20">6) Discount</h2>
 
             <div class="discount-section g2">
@@ -216,7 +214,6 @@
           </div>
         </div>
 
-        {{-- Summary --}}
         <div class="card">
           <h2>Summary</h2>
           <div id="summary"></div>
@@ -236,18 +233,14 @@
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
 <script>
-/** =========================
- *  DATA
- *  ========================= */
 const PACKAGES       = @json($packagesData);
+const PACKAGE_TIMES  = @json($packageTimesData);
 const LOCATIONS      = @json($locationsData);
 const ADDONS         = @json($addonsData);
 const ADVANCE_SETUPS = @json($advanceSetupsData);
 const BRANDING       = @json($brandingData);
 
-/** =========================
- *  ELEMENTS
- *  ========================= */
+const packageTimeSelect = document.getElementById('packageTime');
 const pkgSelect   = document.getElementById('pkg');
 const locSelect   = document.getElementById('loc');
 const brandSelect = document.getElementById('bran');
@@ -291,9 +284,6 @@ const advanceManualNoteEl  = document.getElementById('advanceManualNote');
 const advanceDateBox       = document.getElementById('advanceDateBox');
 const advanceDateEl        = document.getElementById('advanceDate');
 
-/** =========================
- *  STATE
- *  ========================= */
 let selectedDates = [];
 let selectedItems = [];
 let editingItemId = null;
@@ -305,9 +295,6 @@ let pkgTS = null;
 let branTS = null;
 let advanceTS = null;
 
-/** =========================
- *  POPULATE DROPDOWNS
- *  ========================= */
 function populateDropdowns() {
   pkgSelect.innerHTML = '';
 
@@ -350,6 +337,20 @@ function populateDropdowns() {
     opt.textContent = `${b.name} (+${b.price} AED)`;
     brandSelect.appendChild(opt);
   });
+
+  packageTimeSelect.innerHTML = '';
+
+  const ptEmpty = document.createElement('option');
+  ptEmpty.value = '';
+  ptEmpty.textContent = 'Select package time...';
+  packageTimeSelect.appendChild(ptEmpty);
+
+  PACKAGE_TIMES.forEach(pt => {
+    const opt = document.createElement('option');
+    opt.value = String(pt.id);
+    opt.textContent = `${pt.name} (${pt.timer} hrs)`;
+    packageTimeSelect.appendChild(opt);
+  });
 }
 
 function populateAdvanceDropdown() {
@@ -368,9 +369,6 @@ function populateAdvanceDropdown() {
   });
 }
 
-/** =========================
- *  INIT TOMSELECT
- *  ========================= */
 function initSearchSelects() {
   if (pkgTS) pkgTS.destroy();
   if (branTS) branTS.destroy();
@@ -416,9 +414,6 @@ function initAdvanceSelect() {
   });
 }
 
-/** =========================
- *  ADVANCE MODE UI
- *  ========================= */
 function toggleAdvanceModeUI() {
   const mode = advanceModeEl.value;
 
@@ -454,27 +449,59 @@ function toggleAdvanceModeUI() {
   }
 }
 
-/** =========================
- *  STEP 5: ADDONS CHECKBOXES
- *  ========================= */
 function renderAddonsCheckboxes() {
   addonsBoxEl.innerHTML = '';
+
   ADDONS.forEach(a => {
     const div = document.createElement('div');
     div.className = "addon-row";
+    div.style.marginBottom = "10px";
+
     div.innerHTML = `
-      <label style="display:flex; align-items:center; gap:8px;">
-        <input type="checkbox" value="${a.id}">
+      <label style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+        <input type="checkbox" value="${a.id}" class="addon-checkbox">
         <span>${a.name} (+${a.price} AED)</span>
       </label>
+
+      <div class="addon-qty-wrap" id="addon-qty-wrap-${a.id}" style="display:none; margin-left:24px;">
+        <label style="font-size:12px;">Quantity</label>
+        <input
+          type="number"
+          min="1"
+          value="1"
+          class="addon-qty-input"
+          id="addon-qty-${a.id}"
+          style="width:100px;"
+        >
+      </div>
     `;
+
     addonsBoxEl.appendChild(div);
+  });
+
+  addonsBoxEl.querySelectorAll('.addon-checkbox').forEach(cb => {
+    cb.addEventListener('change', function () {
+      const addonId = this.value;
+      const qtyWrap = document.getElementById(`addon-qty-wrap-${addonId}`);
+      const qtyInput = document.getElementById(`addon-qty-${addonId}`);
+
+      if (this.checked) {
+        qtyWrap.style.display = 'block';
+        qtyInput.value = qtyInput.value || 1;
+      } else {
+        qtyWrap.style.display = 'none';
+        qtyInput.value = 1;
+      }
+
+      updateSummary();
+    });
+  });
+
+  addonsBoxEl.querySelectorAll('.addon-qty-input').forEach(input => {
+    input.addEventListener('input', updateSummary);
   });
 }
 
-/** =========================
- *  HELPERS
- *  ========================= */
 function formatDate(d) {
   const dt = new Date(d);
   if (Number.isNaN(dt.getTime())) return d;
@@ -582,11 +609,8 @@ function getDateRangeText(item) {
   return `${formatDate(dates[0])} to ${formatDate(dates[dates.length - 1])}`;
 }
 
-/** =========================
- *  INCLUDED HOURS + EXTRA HOURS
- *  ========================= */
 function getIncludedHours(item) {
-  return Number(item.includedHours || 4);
+  return Number(item.includedHours || 0);
 }
 
 function formatIncludedHours(item) {
@@ -674,7 +698,10 @@ function getItemSubtotal(item) {
   let s = Number(item.price) * Number(item.qty) * totalDays;
   s += (item.locations || []).reduce((acc, l) => acc + Number(l.surcharge), 0);
   s += (item.branding || []).reduce((acc, b) => acc + Number(b.price), 0);
-  s += (item.addons || []).reduce((acc, a) => acc + Number(a.price), 0);
+  s += (item.addons || []).reduce((acc, a) => {
+    const qty = Number(a.qty || 1);
+    return acc + (Number(a.price) * qty);
+  }, 0);
 
   const extraHour = getItemTotalExtraHourCharge(item);
   s += Number(extraHour.total || 0);
@@ -682,9 +709,6 @@ function getItemSubtotal(item) {
   return s;
 }
 
-/** =========================
- *  DATE MODE UI
- *  ========================= */
 function toggleDateModeUI() {
   if (getDateMode() === 'single') {
     singleDateBox.style.display = 'block';
@@ -695,9 +719,6 @@ function toggleDateModeUI() {
   }
 }
 
-/** =========================
- *  DATES UI
- *  ========================= */
 function renderDateList() {
   dateList.innerHTML = '';
 
@@ -740,9 +761,6 @@ function renderDateList() {
   }
 }
 
-/** =========================
- *  TIMINGS UI
- *  ========================= */
 autoRadio.addEventListener('change', () => {
   autoBox.classList.remove('hide');
   manualBox.classList.add('hide');
@@ -801,9 +819,6 @@ function applyTimesToUI(item) {
   });
 }
 
-/** =========================
- *  EDIT MODE
- *  ========================= */
 function setEditingMode(isEditing) {
   if (isEditing) {
     addPkgBtn.textContent = "Save Changes";
@@ -849,6 +864,7 @@ function clearFormSelections() {
   }
 
   locSelect.value = '';
+  packageTimeSelect.value = '';
 
   advanceModeEl.value = '';
 
@@ -867,7 +883,13 @@ function clearFormSelections() {
   advanceManualNoteEl.value = "";
   advanceDateEl.value = "";
 
-  addonsBoxEl.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+  addonsBoxEl.querySelectorAll('.addon-checkbox').forEach(cb => cb.checked = false);
+  addonsBoxEl.querySelectorAll('.addon-qty-wrap').forEach(wrap => {
+    wrap.style.display = 'none';
+  });
+  addonsBoxEl.querySelectorAll('.addon-qty-input').forEach(input => {
+    input.value = 1;
+  });
 
   selectedDates = [];
   singleDayMode.checked = true;
@@ -912,6 +934,8 @@ function setFormFromItem(item) {
   if (pkgTS) pkgTS.setValue(String(item.pkgId), true);
   else pkgSelect.value = String(item.pkgId);
 
+  packageTimeSelect.value = item.packageTimeId ? String(item.packageTimeId) : '';
+
   document.getElementById('pkgQty').value = item.qty || 1;
 
   if (item.locations && item.locations.length) {
@@ -951,9 +975,26 @@ function setFormFromItem(item) {
     toggleAdvanceModeUI();
   }
 
-  const addonIds = new Set((item.addons || []).filter(a => a.type === 'addon').map(a => String(a.id)));
-  addonsBoxEl.querySelectorAll('input[type=checkbox]').forEach(cb => {
-    cb.checked = addonIds.has(String(cb.value));
+  const addonMap = {};
+  (item.addons || []).filter(a => a.type === 'addon').forEach(a => {
+    addonMap[String(a.id)] = a;
+  });
+
+  addonsBoxEl.querySelectorAll('.addon-checkbox').forEach(cb => {
+    const addonId = String(cb.value);
+    const addon = addonMap[addonId];
+    const qtyWrap = document.getElementById(`addon-qty-wrap-${addonId}`);
+    const qtyInput = document.getElementById(`addon-qty-${addonId}`);
+
+    if (addon) {
+      cb.checked = true;
+      qtyWrap.style.display = 'block';
+      qtyInput.value = addon.qty || 1;
+    } else {
+      cb.checked = false;
+      qtyWrap.style.display = 'none';
+      qtyInput.value = 1;
+    }
   });
 
   const firstDate = selectedDates[0];
@@ -970,9 +1011,6 @@ function setFormFromItem(item) {
   applyTimesToUI(item);
 }
 
-/** =========================
- *  SUMMARY
- *  ========================= */
 function updateSummary() {
   const tables = [];
   let allSubtotals = 0;
@@ -1011,15 +1049,18 @@ function updateSummary() {
       const brTxt  = (it.branding || []).map(x => x.name).join(', ') || '-';
       const adTxt  = (it.addons || []).map(a => {
         const noteText = a.note ? ` (${a.note})` : '';
+        const qtyText = a.type === 'addon' ? ` x${a.qty || 1}` : '';
+        const totalText = a.type === 'addon' ? ` = ${(Number(a.price) * Number(a.qty || 1)).toFixed(2)} AED` : '';
+
         return a.selectedDate
-          ? `${a.name}${noteText} - ${formatDate(a.selectedDate)}`
-          : `${a.name}${noteText}`;
+          ? `${a.name}${noteText}${qtyText} - ${formatDate(a.selectedDate)}${totalText}`
+          : `${a.name}${noteText}${qtyText}${totalText}`;
       }).join(', ') || '-';
 
       itemsListHtml += `
         <tr>
           <td>${idx + 1}</td>
-          <td>${it.name}</td>
+          <td>${it.name}<br><small>${it.packageTimeName || '-'}</small></td>
           <td class="right">${it.qty}</td>
           <td class="right">${getTotalDays(it)}</td>
           <td>${getDateRangeText(it)}</td>
@@ -1106,14 +1147,17 @@ function updateSummary() {
       (item.addons || []).forEach(a => {
         const noteText = a.note ? ` (${a.note})` : '';
         const title = a.selectedDate ? `${a.name}${noteText} - ${formatDate(a.selectedDate)}` : `${a.name}${noteText}`;
+        const addonQty = Number(a.qty || 1);
+        const addonTotal = Number(a.price) * addonQty;
+
         rows += `
           <tr>
             <td></td>
             <td>${title}</td>
-            <td class="right">1</td>
+            <td class="right">${addonQty}</td>
             <td></td>
             <td class="right">${Number(a.price).toFixed(2)}</td>
-            <td class="right">${Number(a.price).toFixed(2)}</td>
+            <td class="right">${addonTotal.toFixed(2)}</td>
           </tr>`;
       });
 
@@ -1196,9 +1240,6 @@ function updateSummary() {
   });
 }
 
-/** =========================
- *  ADD / SAVE PACKAGE ITEM
- *  ========================= */
 addPkgBtn.onclick = () => {
   if (!selectedDates.length) {
     alert("Please select event date(s).");
@@ -1211,6 +1252,14 @@ addPkgBtn.onclick = () => {
 
   if (!pkg) {
     alert("Please select a package.");
+    return;
+  }
+
+  const packageTimeId = packageTimeSelect.value;
+  const selectedPackageTime = PACKAGE_TIMES.find(pt => String(pt.id) === String(packageTimeId));
+
+  if (!selectedPackageTime) {
+    alert("Please select a package time.");
     return;
   }
 
@@ -1232,6 +1281,8 @@ addPkgBtn.onclick = () => {
           id: a.id,
           name: a.name,
           price: Number(a.price),
+          qty: 1,
+          total: Number(a.price),
           selectedDate: advDate,
           type: 'advance',
           isManual: false,
@@ -1262,6 +1313,8 @@ addPkgBtn.onclick = () => {
         id: 'manual-advance',
         name: manualName,
         price: manualPrice,
+        qty: 1,
+        total: manualPrice,
         selectedDate: advDate,
         type: 'advance',
         isManual: true,
@@ -1270,13 +1323,19 @@ addPkgBtn.onclick = () => {
     }
   }
 
-  addonsBoxEl.querySelectorAll('input[type=checkbox]:checked').forEach(cb => {
+  addonsBoxEl.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
     const a = ADDONS.find(x => String(x.id) === String(cb.value));
     if (!a) return;
+
+    const qtyInput = document.getElementById(`addon-qty-${a.id}`);
+    const addonQty = Math.max(1, parseInt(qtyInput?.value || 1));
+
     itemAddons.push({
       id: a.id,
       name: a.name,
       price: Number(a.price),
+      qty: addonQty,
+      total: Number(a.price) * addonQty,
       selectedDate: null,
       type: 'addon'
     });
@@ -1305,7 +1364,9 @@ addPkgBtn.onclick = () => {
     name: pkg.name,
     desc: pkg.desc || "",
     price: Number(pkg.price),
-    includedHours: Number(pkg.included_hours || 4),
+    packageTimeId: selectedPackageTime.id,
+    packageTimeName: selectedPackageTime.name,
+    includedHours: Number(selectedPackageTime.timer || 0),
     extraHourRate: Number(getPackageExtraHourRate(pkg) || 0),
     qty,
     dateMode: getDateMode(),
@@ -1339,9 +1400,6 @@ addPkgBtn.onclick = () => {
   updateSummary();
 };
 
-/** =========================
- *  ADD DATE
- *  ========================= */
 addDateBtn.onclick = () => {
   const mode = getDateMode();
 
@@ -1371,9 +1429,6 @@ addDateBtn.onclick = () => {
   updateSummary();
 };
 
-/** =========================
- *  DISCOUNT + TIME CHANGE
- *  ========================= */
 discountTypeSelect.addEventListener('change', e => {
   discountType = e.target.value;
   updateSummary();
@@ -1391,9 +1446,6 @@ singleDayMode.addEventListener('change', toggleDateModeUI);
 multipleDayMode.addEventListener('change', toggleDateModeUI);
 advanceModeEl.addEventListener('change', toggleAdvanceModeUI);
 
-/** =========================
- *  RESET
- *  ========================= */
 resetBtn.addEventListener('click', () => {
   selectedDates = [];
   selectedItems = [];
@@ -1411,9 +1463,6 @@ resetBtn.addEventListener('click', () => {
   updateSummary();
 });
 
-/** =========================
- *  INIT
- *  ========================= */
 populateDropdowns();
 populateAdvanceDropdown();
 initSearchSelects();
@@ -1424,6 +1473,7 @@ if (pkgTS) pkgTS.setValue('', true);
 if (branTS) branTS.setValue('', true);
 if (advanceTS) advanceTS.setValue('', true);
 locSelect.value = '';
+packageTimeSelect.value = '';
 
 toggleDateModeUI();
 toggleAdvanceModeUI();
@@ -1655,29 +1705,31 @@ copyBtn.addEventListener('click', async () => {
         fmt(br.price)
       ]);
     });
-  
-    (item.addons || []).forEach(a => {
-    const isAdvance =
-      a.type === 'advance' ||
-      String(a.name).trim().toUpperCase().includes("ADVANCE");
 
-    const noteText = a.note ? ` (${a.note})` : '';
+   (item.addons || []).forEach(a => {
+      const isAdvance =
+        a.type === 'advance' ||
+        String(a.name).trim().toUpperCase().includes("ADVANCE");
 
-    const title = isAdvance && a.selectedDate
-      ? `${a.name}${noteText} - ${formatDate(a.selectedDate)}`
-      : `${a.name}${noteText}`;
+      const noteText = a.note ? ` (${a.note})` : '';
 
-    const addonDuration = isAdvance ? "2 hours" : "";
+      const title = isAdvance && a.selectedDate
+        ? `${a.name}${noteText} - ${formatDate(a.selectedDate)}`
+        : `${a.name}${noteText}`;
 
-    body.push([
-      "",
-      title,
-      "1",
-      addonDuration,
-      fmt(a.price),
-      fmt(a.price)
-    ]);
-  });
+      const addonDuration = isAdvance ? "2 hours" : "";
+      const addonQty = Number(a.qty || 1);
+      const addonTotal = Number(a.price) * addonQty;
+
+      body.push([
+        "",
+        title,
+        String(addonQty),
+        addonDuration,
+        fmt(a.price),
+        fmt(addonTotal)
+      ]);
+    });
 
     const extraHourRows = getItemExtraHoursBreakdown(item).filter(ex => ex.extraHours > 0);
 

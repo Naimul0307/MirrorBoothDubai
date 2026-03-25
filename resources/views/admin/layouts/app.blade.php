@@ -132,16 +132,22 @@
                                     <p>Manage Hours</p>
                                 </a>
                             </li>
-							<li class="nav-item">
-                                <a href="{{ route('settings.index') }}" class="nav-link">
+                            <li class="nav-item">
+                                <a href="{{ route('packageTimesList') }}" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Settings</p>
+                                    <p>Package Times List</p>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('quote.index') }}" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Quote Calculator</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('settings.index') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Settings</p>
                                 </a>
                             </li>
                             <li class="nav-item">

@@ -52,7 +52,6 @@ class AdminPackageController extends Controller
             $package->name = $request->name;
             $package->price = $request->price;
             $package->description = $request->description;
-            $package->included_hours = $request->included_hours ?? 4;
             $package->slug = $request->slug;
             $package->status = $request->status ?? 1;
             $package->save();
@@ -115,7 +114,6 @@ class AdminPackageController extends Controller
             $package->name = $request->name;
             $package->price = $request->price;
             $package->description = $request->description;
-            $package->included_hours = $request->included_hours ?? 4;
             $package->slug = $request->slug;
             $package->status = $request->status ?? 1;
             $package->save();

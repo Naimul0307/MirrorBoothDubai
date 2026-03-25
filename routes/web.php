@@ -11,6 +11,7 @@ use App\Http\Controllers\admin\AdminLocationController;
 use App\Http\Controllers\admin\AdminPackageController;
 use App\Http\Controllers\admin\AdminBrandController;
 use App\Http\Controllers\admin\AdminExtraHourController;
+use App\Http\Controllers\admin\AdminPackageTimesController;
 use App\Http\Controllers\admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\admin\LoginController as AdminLoginController;
 use App\Http\Controllers\admin\ServiceController;
@@ -149,6 +150,15 @@ Route::group(['prefix' => 'admin'],function(){
         Route::post('/addons/delete/{id}',[AdminAddonController::class,'delete'])->name('addon.delete');
         Route::get('/addons/get-slug',[AdminAddonController::class,'getSlug'])->name('addon.slug');
        
+        //PackageTimes Route
+        Route::get('/packageTimes',[AdminPackageTimesController::class,'index'])->name('packageTimesList');
+        Route::get('/packageTimes/create',[AdminPackageTimesController::class,'create'])->name('packageTimes.create');
+        Route::post('/packageTimes/create',[AdminPackageTimesController::class,'save'])->name('packageTimes.store');
+        Route::get('/packageTimes/edit/{id}',[AdminPackageTimesController::class,'edit'])->name('packageTimes.edit');
+        Route::post('/packageTimes/edit/{id}',[AdminPackageTimesController::class,'update'])->name('packageTimes.update');
+        Route::post('/packageTimes/delete/{id}',[AdminPackageTimesController::class,'delete'])->name('packageTimes.delete');
+        Route::get('/packageTimes/get-slug',[AdminPackageTimesController::class,'getSlug'])->name('packageTimes.slug');
+        
         //Advance Setup Route
         Route::get('/advance-setup',[AdminAdvanceSetupController::class,'index'])->name('advanceSetupList');
         Route::get('/advance-setup/create',[AdminAdvanceSetupController::class,'create'])->name('advanceSetup.create');

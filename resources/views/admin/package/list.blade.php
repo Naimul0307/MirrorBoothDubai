@@ -62,7 +62,6 @@
                                     <th width="150">Slug</th>
                                     <th width="100">Price</th>
                                     <th width="150">Brandings</th>
-                                    <th width="150">Packge Hours</th>
                                     <th width="150">Hours</th>
                                     <th width="120">Created</th>
                                     <th width="100">Status</th>
@@ -81,9 +80,6 @@
                                                 @else
                                                     <span class="text-muted">No Brand</span>
                                                 @endif
-                                            </td>
-                                            <td>
-                                                {{ $package->included_hours }} hours
                                             </td>
                                             <td>
                                                 @if($package->hours?->count() > 0)

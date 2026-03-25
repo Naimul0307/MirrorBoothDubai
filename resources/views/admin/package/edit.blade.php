@@ -54,12 +54,6 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Included Hours</label>
-                                <input type="number" name="included_hours" id="included_hours" class="form-control" value="{{ $package->included_hours }}">
-                                <small class="text-danger included-hours-error"></small>
-                            </div>
-
-                            <div class="form-group">
                                 <label>Branding</label>
                                 <select name="brand_id" class="form-control">
                                     <option value="">-- Select Branding --</option>

@@ -61,6 +61,7 @@
                                     <th width="150">Name</th>
                                     <th width="150">Slug</th>
                                     <th width="100">Price</th>
+                                    <th width="150">Category</th>
                                     <th width="150">Brandings</th>
                                     <th width="150">Hours</th>
                                     <th width="120">Created</th>
@@ -74,6 +75,7 @@
                                             <td>{{ $package->name }}</td>
                                             <td>{{ $package->slug }}</td>
                                             <td>{{ $package->price }}</td>
+                                            <td>{{ $package->category->name ?? 'No Category' }}</td>
                                             <td>
                                                 @if($package->brands->count() > 0)
                                                     {{ $package->brands->pluck('name')->implode(', ') }}

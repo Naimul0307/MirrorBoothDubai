@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const PAGE_W = doc.internal.pageSize.getWidth();
         const PAGE_H = doc.internal.pageSize.getHeight();
 
-        const MARGIN_L = 14;
-        const MARGIN_R = 14;
+        const MARGIN_L = 10;
+        const MARGIN_R = 10;
 
         const HEADER_H = 55;
         const START_Y_FIRST = 72;
@@ -136,6 +136,39 @@ document.addEventListener('DOMContentLoaded', function () {
             return parts.map(x => "• " + x);
         }
 
+        function breakLongWord(word, maxLen = 14) {
+            if (!word || word.length <= maxLen) return word;
+            let out = '';
+            for (let i = 0; i < word.length; i += maxLen) {
+                out += word.slice(i, i + maxLen);
+                if (i + maxLen < word.length) out += '-\n';
+            }
+            return out;
+        }
+
+        function safeWrapText(value, maxWordLen = 14) {
+            return String(value || '')
+                .split('\n')
+                .map(line =>
+                    line
+                        .split(/\s+/)
+                        .map(word => breakLongWord(word, maxWordLen))
+                        .join(' ')
+                )
+                .join('\n');
+        }
+
+        function compactText(value) {
+            return safeWrapText(
+                String(value || '')
+                    .replace(/Logistic labor setup & dismantling/gi, 'Logistic setup')
+                    .replace(/Additional Hours/gi, 'Extra Hours')
+                    .replace(/\s+/g, ' ')
+                    .trim(),
+                14
+            );
+        }
+
         drawHeader();
         drawBillToFirstPage();
         drawQuoteMetaFirstPage();
@@ -200,22 +233,31 @@ document.addEventListener('DOMContentLoaded', function () {
             const descParts = [item.name];
             if (bullets.length) descParts.push(...bullets);
 
-            const descCell = descParts.join("\n");
-            const dateCell = `${state.getDateRangeText(item)}\n${state.getTotalDays(item)} day(s)`;
+            const descCell = compactText(descParts.join("\n"));
+            const dateCell = safeWrapText(`${state.getDateRangeText(item)}\n${state.getTotalDays(item)} day(s)`, 12);
+
+            const packageBaseTotal = state.isGameReskinningItem(item)
+                ? (Number(item.price) * Number(item.qty))
+                : (Number(item.price) * Number(item.qty) * state.getTotalDays(item));
 
             body.push([
                 dateCell,
                 descCell,
                 String(Number(item.qty)),
-                state.formatIncludedHours(item),
+                safeWrapText(
+                    state.isGameReskinningItem(item)
+                        ? state.getGameReskinningDurationFromAddons(item)
+                        : state.formatIncludedHours(item),
+                    12
+                ),
                 fmt(item.price),
-                fmt(Number(item.price) * Number(item.qty) * state.getTotalDays(item))
+                fmt(packageBaseTotal)
             ]);
 
             (item.locations || []).forEach(loc => {
                 body.push([
                     "",
-                    "Logistic labor setup & dismantling in " + loc.name,
+                    compactText(`Logistic setup - ${loc.name}`),
                     "1",
                     "",
                     fmt(loc.surcharge),
@@ -226,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
             (item.branding || []).forEach(br => {
                 body.push([
                     "",
-                    br.name,
+                    compactText(br.name),
                     "1",
                     "",
                     fmt(br.price),
@@ -242,18 +284,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 const noteText = a.note ? ` (${a.note})` : '';
 
                 const title = isAdvance && a.selectedDate
-                    ? `${a.name}${noteText} - ${state.formatDate(a.selectedDate)}`
+                    ? `${a.name}${noteText}\n${state.formatDate(a.selectedDate)}`
                     : `${a.name}${noteText}`;
 
-                const addonDuration = isAdvance ? "2 hours" : "";
                 const addonQty = Number(a.qty || 1);
-                const addonTotal = Number(a.price) * addonQty;
+
+                let addonDuration = "";
+                let addonTotal = Number(a.price) * addonQty;
+
+                if (isAdvance) {
+                    addonDuration = "2 hours";
+                    addonTotal = Number(a.price) * addonQty;
+                } else if (state.isGameReskinningItem(item)) {
+                    addonDuration = `${state.getTotalDays(item)} day(s)`;
+                    addonTotal = Number(a.price) * addonQty * state.getTotalDays(item);
+                }
 
                 body.push([
                     "",
-                    title,
+                    compactText(title),
                     String(addonQty),
-                    addonDuration,
+                    safeWrapText(addonDuration, 12),
                     fmt(a.price),
                     fmt(addonTotal)
                 ]);
@@ -263,10 +314,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             extraHourRows.forEach(ex => {
                 body.push([
-                    state.formatDate(ex.date),
-                    `ADDITIONAL HOURS (${ex.start} - ${ex.end})`,
+                    safeWrapText(state.formatDate(ex.date), 12),
+                    compactText(`Extra Hours (${ex.start} - ${ex.end})`),
                     String(ex.qty),
-                    `${ex.extraHours} hour${ex.extraHours > 1 ? 's' : ''}`,
+                    safeWrapText(`${ex.extraHours} hour${ex.extraHours > 1 ? 's' : ''}`, 12),
                     fmt(ex.rate),
                     fmt(ex.total)
                 ]);
@@ -282,6 +333,7 @@ document.addEventListener('DOMContentLoaded', function () {
             doc.autoTable({
                 startY: cursorY,
                 theme: "grid",
+                margin: { left: MARGIN_L, right: MARGIN_R },
                 head: [[
                     "DATE",
                     "DESCRIPTION",
@@ -293,28 +345,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 body,
                 styles: {
                     font: "helvetica",
-                    fontSize: 9,
-                    cellPadding: 2,
+                    fontSize: 6.5,
+                    cellPadding: 1.2,
+                    minCellHeight: 5.5,
                     lineWidth: 0.2,
                     lineColor: [0, 0, 0],
                     textColor: [0, 0, 0],
-                    valign: "top"
+                    valign: "top",
+                    halign: "left",
+                    overflow: 'linebreak'
                 },
                 headStyles: {
                     fillColor: [0, 0, 0],
                     textColor: 255,
                     fontStyle: "bold",
-                    fontSize: 8,
+                    fontSize: 6.5,
                     halign: "center",
+                    valign: "middle",
                     lineWidth: 0.2
                 },
+                bodyStyles: {
+                    overflow: 'linebreak'
+                },
                 columnStyles: {
-                    0: { cellWidth: 28 },
-                    1: { cellWidth: 72 },
+                    0: { cellWidth: 20 },
+                    1: { cellWidth: 70 },
                     2: { cellWidth: 10, halign: "center" },
                     3: { cellWidth: 22, halign: "center" },
-                    4: { cellWidth: 24, halign: "center" },
-                    5: { cellWidth: 24, halign: "center" }
+                    4: { cellWidth: 18, halign: "center" },
+                    5: { cellWidth: 18, halign: "center" }
                 },
                 didParseCell: function (data) {
                     if (data.section === "body" && data.row.index === 0 && data.column.index === 1) {
@@ -326,13 +385,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         if (label === "TOTAL AMOUNT") {
                             for (let i = 0; i <= 5; i++) {
-                                data.row.cells[i].styles.fillColor = [205, 220, 245];
-                                data.row.cells[i].styles.fontStyle = "bold";
+                                if (data.row.cells[i]) {
+                                    data.row.cells[i].styles.fillColor = [205, 220, 245];
+                                    data.row.cells[i].styles.fontStyle = "bold";
+                                }
                             }
                         }
 
                         if (label === "SUBTOTAL" || label === "VAT 5%" || label === "DISCOUNT") {
-                            data.row.cells[4].styles.fontStyle = "bold";
+                            if (data.row.cells[4]) {
+                                data.row.cells[4].styles.fontStyle = "bold";
+                            }
                         }
                     }
                 }

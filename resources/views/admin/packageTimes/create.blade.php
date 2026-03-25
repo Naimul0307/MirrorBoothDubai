@@ -47,7 +47,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="timer">Timer</label>
+                                    <label for="timer">Duration</label>
                                     <input type="text" name="timer" id="timer" class="form-control">
                                     <p class="error timer-error"></p>
                                 </div>

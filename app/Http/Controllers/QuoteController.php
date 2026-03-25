@@ -14,7 +14,7 @@ class QuoteController extends Controller
 {
     public function index()
     {
-        $packages = Package::with(['brands', 'hours'])
+        $packages = Package::with(['category', 'brands', 'hours'])
             ->where('status', 1)
             ->orderBy('id', 'asc')
             ->get();
@@ -41,6 +41,8 @@ class QuoteController extends Controller
                 'price' => (float) $p->price,
                 'extra_hour_rate' => $extraHourRate,
                 'desc' => $p->description ?? '',
+                'category_name' => $p->category->name ?? '',
+                'category_slug' => $p->category->slug ?? '',
                 'brands' => $p->brands->pluck('id')->toArray(),
                 'hours' => $p->hours->map(function ($h) {
                     return [
@@ -56,7 +58,7 @@ class QuoteController extends Controller
             return [
                 'id' => $l->id,
                 'name' => $l->name,
-                'surcharge' => $l->surcharge,
+                'surcharge' => (float) $l->surcharge,
             ];
         })->toArray();
 
@@ -64,7 +66,7 @@ class QuoteController extends Controller
             return [
                 'id' => $a->id,
                 'name' => $a->name,
-                'price' => $a->price,
+                'price' => (float) $a->price,
             ];
         })->toArray();
 
@@ -72,7 +74,7 @@ class QuoteController extends Controller
             return [
                 'id' => $a->id,
                 'name' => $a->name,
-                'price' => $a->price,
+                'price' => (float) $a->price,
             ];
         })->toArray();
 
@@ -80,7 +82,7 @@ class QuoteController extends Controller
             return [
                 'id' => $b->id,
                 'name' => $b->name,
-                'price' => $b->price,
+                'price' => (float) $b->price,
             ];
         })->toArray();
 

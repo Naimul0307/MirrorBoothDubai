@@ -4,19 +4,23 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::table('packages', function (Blueprint $table) {
-            $table->decimal('included_hours', 5, 2)->default(4)->after('price');
+            $table->foreignId('category_id')
+                ->nullable()
+                ->constrained('package_categories')
+                ->onDelete('set null');
         });
     }
 
     public function down(): void
     {
         Schema::table('packages', function (Blueprint $table) {
-            $table->dropColumn('included_hours');
+            $table->dropForeign(['category_id']);
+            $table->dropColumn('category_id');
         });
     }
 };
-

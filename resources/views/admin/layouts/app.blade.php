@@ -133,9 +133,15 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ route('packageCategoryList') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Package Category List</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ route('packageTimesList') }}" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Package Times List</p>
+                                    <p>Package Duration List</p>
                                 </a>
                             </li>
                             <li class="nav-item">

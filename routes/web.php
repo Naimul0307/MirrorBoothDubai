@@ -12,6 +12,7 @@ use App\Http\Controllers\admin\AdminPackageController;
 use App\Http\Controllers\admin\AdminBrandController;
 use App\Http\Controllers\admin\AdminExtraHourController;
 use App\Http\Controllers\admin\AdminPackageTimesController;
+use App\Http\Controllers\admin\AdminPackageCategoryController;
 use App\Http\Controllers\admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\admin\LoginController as AdminLoginController;
 use App\Http\Controllers\admin\ServiceController;
@@ -159,6 +160,15 @@ Route::group(['prefix' => 'admin'],function(){
         Route::post('/packageTimes/delete/{id}',[AdminPackageTimesController::class,'delete'])->name('packageTimes.delete');
         Route::get('/packageTimes/get-slug',[AdminPackageTimesController::class,'getSlug'])->name('packageTimes.slug');
         
+        //PackageCategory Route
+        Route::get('/package-category', [AdminPackageCategoryController::class, 'index'])->name('packageCategoryList');
+        Route::get('/package-category/create', [AdminPackageCategoryController::class, 'create'])->name('packageCategory.create');
+        Route::post('/package-category/store', [AdminPackageCategoryController::class, 'store'])->name('packageCategory.store');
+        Route::get('/package-category/edit/{id}', [AdminPackageCategoryController::class, 'edit'])->name('packageCategory.edit');
+        Route::post('/package-category/edit/{id}', [AdminPackageCategoryController::class, 'update'])->name('packageCategory.update');
+        Route::post('/package-category/delete/{id}', [AdminPackageCategoryController::class, 'delete'])->name('packageCategory.delete');
+        Route::get('/package-category/get-slug', [AdminPackageCategoryController::class, 'getSlug'])->name('packageCategory.slug');
+
         //Advance Setup Route
         Route::get('/advance-setup',[AdminAdvanceSetupController::class,'index'])->name('advanceSetupList');
         Route::get('/advance-setup/create',[AdminAdvanceSetupController::class,'create'])->name('advanceSetup.create');

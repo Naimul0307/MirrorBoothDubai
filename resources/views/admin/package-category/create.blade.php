@@ -7,12 +7,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Package Times / Edit</h1>
+                    <h1 class="m-0">Package Category / Create</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -28,35 +28,28 @@
             <!-- Small boxes (Stat box) -->
             <div class="row">
                 <div class="col-md-12 ">
-                    <form action="" method="post" name="packageTimesEdit" id="packageTimesEdit">
+                    <form action="" method="post" name="createPackageCategoryForm" id="createPackageCategoryForm">
                         <div class="card">
                             <div class="card-header">
-                                <a href="{{ route('packageTimesList') }}" class="btn btn-primary">Back</a>
+                                <a href="{{ route('packageCategoryList') }}" class="btn btn-primary">Back</a>
                             </div>
                             <div class="card-body">
                                 <div class="form-group">
                                     <label for="name">Name</label>
-                                    <input type="text" value="{{ $packageTimes->name }}" name="name" id="name" class="form-control">
+                                    <input type="text" name="name" id="name" class="form-control">
                                     <p class="error name-error"></p>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="name">Slug</label>
-                                    <input type="text" readonly name="slug" id="slug" value="{{ $packageTimes->slug }}" class="form-control">
+                                    <input type="text" readonly name="slug" id="slug" class="form-control">
                                     <p class="error slug-error"></p>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="timer">Duration</label>
-                                    <input type="text" name="timer" id="timer" value="{{ $packageTimes->timer }}" class="form-control">
-                                    <p class="error timer-error"></p>
-                                </div>
-
                                 <div class="form-group mt-4">
                                     <label for="status">Status</label>
                                     <select name="status" id="status" class="form-control">
-                                        <option value="1" {{ ($packageTimes->status == 1) ? 'selected' : '' }}>Active</option>
-                                        <option value="0"  {{ ($packageTimes->status == 0) ? 'selected' : '' }}>Block</option>
+                                        <option value="1">Active</option>
+                                        <option value="0">Block</option>
                                     </select>
                                 </div>
 
@@ -79,36 +72,24 @@
 
 <script type="text/javascript">
 
-    $("#packageTimesEdit").submit(function(event){
+    $("#createPackageCategoryForm").submit(function(event){
         event.preventDefault();
-        $("button[type='submit']").prop('disabled', true);
+        $("button[type='submit']").prop('disabled',true);
+
         $.ajax({
-            url: '{{ route("packageTimes.update", $packageTimes->id) }}',
+            url: '{{ route("packageCategory.store") }}',
             type: 'POST',
             dataType: 'json',
-            data: $("#packageTimesEdit").serialize(),
+            data: $("#createPackageCategoryForm").serializeArray(),
             success: function(response){
-                $("button[type='submit']").prop('disabled', false);
+                $("button[type='submit']").prop('disabled',false);
+
                 if(response.status == 200) {
-                    window.location.href = '{{ route("packageTimesList") }}';
+                    // no error
+                    window.location.href = '{{ route("packageCategoryList") }}';
                 } else {
-                    if(response.errors.name) {
-                        $('.name-error').html(response.errors.name);
-                    } else {
-                        $('.name-error').html('');
-                    }
-
-                    if(response.errors.timer) {
-                        $('.timer-error').html(response.errors.timer[0]);
-                    } else {
-                        $('.timer-error').html('');
-                    }
-
-                    if (response.errors.slug) {
-                        $('.slug-error').html(response.errors.slug);
-                    } else {
-                        $('.slug-error').html('');
-                    }
+                    // Here we will show errors
+                    $('.name-error').html(response.errors.name);
                 }
             }
         });
@@ -117,7 +98,7 @@
     $("#name").change(function(){
         $("button[type='submit']").prop('disabled',true);
         $.ajax({
-            url: '{{ route("packageTimes.slug") }}',
+            url: '{{ route("packageCategory.slug") }}',
             type: 'get',
             data: {name: $(this).val()},
             dataType: 'json',

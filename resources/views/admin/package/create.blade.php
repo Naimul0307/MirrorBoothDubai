@@ -45,7 +45,16 @@
                                 <input type="text" name="price" id="price" class="form-control">
                                 <small class="text-danger price-error"></small>
                             </div>
-
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select name="category_id" class="form-control">
+                                    <option value="">-- Select Category --</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-danger category-error"></small>
+                            </div>
                             <div class="form-group">
                                 <label>Description</label>
                                 <textarea name="description" id="description" class="summernote"></textarea>
@@ -115,6 +124,7 @@ $(document).ready(function() {
                     $('.name-error').text(response.errors.name?.[0] || '');
                     $('.slug-error').text(response.errors.slug?.[0] || '');
                     $('.price-error').text(response.errors.price?.[0] || '');
+                    $('.category-error').text(response.errors.category_id?.[0] || '');
                     $('.branding-error').text(response.errors.brand_id?.[0] || '');
                 }
             },

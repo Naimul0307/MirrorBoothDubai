@@ -15,7 +15,10 @@ class Package extends Model
     protected $fillable = [
         'name',
         'price',
-        'included_hours',
+        'description',
+        'slug',
+        'status',
+        'category_id',
     ];
 
     public function services()
@@ -33,6 +36,11 @@ class Package extends Model
         return $this->belongsToMany(ExtraHour::class, 'package_hours', 'package_id', 'hour_id');
     }
 
+    public function category()
+    {
+        return $this->belongsTo(PackageCategory::class, 'category_id');
+    }
+
     public function sluggable(): array
     {
         return [
@@ -40,5 +48,3 @@ class Package extends Model
         ];
     }
 }
-
-

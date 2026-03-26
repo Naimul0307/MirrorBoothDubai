@@ -17,11 +17,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const PAGE_W = doc.internal.pageSize.getWidth();
         const PAGE_H = doc.internal.pageSize.getHeight();
 
-        const MARGIN_L = 10;
-        const MARGIN_R = 10;
+        const MARGIN_L = 6;
+        const MARGIN_R = 6;
 
         const HEADER_H = 55;
-        const START_Y_FIRST = 72;
+        const START_Y_FIRST = 74;
         const START_Y_OTHER = 60;
         const FOOTER_H = 10;
 
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return parts.map(x => "• " + x);
         }
 
-        function breakLongWord(word, maxLen = 14) {
+        function breakLongWord(word, maxLen = 18) {
             if (!word || word.length <= maxLen) return word;
             let out = '';
             for (let i = 0; i < word.length; i += maxLen) {
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return out;
         }
 
-        function safeWrapText(value, maxWordLen = 14) {
+        function safeWrapText(value, maxWordLen = 18) {
             return String(value || '')
                 .split('\n')
                 .map(line =>
@@ -163,9 +163,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 String(value || '')
                     .replace(/Logistic labor setup & dismantling/gi, 'Logistic setup')
                     .replace(/Additional Hours/gi, 'Extra Hours')
-                    .replace(/\s+/g, ' ')
                     .trim(),
-                14
+                18
             );
         }
 
@@ -233,8 +232,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const descParts = [item.name];
             if (bullets.length) descParts.push(...bullets);
 
-            const descCell = compactText(descParts.join("\n"));
-            const dateCell = safeWrapText(`${state.getDateRangeText(item)}\n${state.getTotalDays(item)} day(s)`, 12);
+            const descCell = descParts.join("\n");
+            const dateCell = safeWrapText(
+                `${state.getDateRangeText(item)}\n${state.getTotalDays(item)} day(s)`,
+                18
+            );
 
             const packageBaseTotal = state.isGameReskinningItem(item)
                 ? (Number(item.price) * Number(item.qty))
@@ -248,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     state.isGameReskinningItem(item)
                         ? state.getGameReskinningDurationFromAddons(item)
                         : state.formatIncludedHours(item),
-                    12
+                    18
                 ),
                 fmt(item.price),
                 fmt(packageBaseTotal)
@@ -304,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     "",
                     compactText(title),
                     String(addonQty),
-                    safeWrapText(addonDuration, 12),
+                    safeWrapText(addonDuration, 18),
                     fmt(a.price),
                     fmt(addonTotal)
                 ]);
@@ -314,10 +316,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             extraHourRows.forEach(ex => {
                 body.push([
-                    safeWrapText(state.formatDate(ex.date), 12),
+                    safeWrapText(state.formatDate(ex.date), 18),
                     compactText(`Extra Hours (${ex.start} - ${ex.end})`),
                     String(ex.qty),
-                    safeWrapText(`${ex.extraHours} hour${ex.extraHours > 1 ? 's' : ''}`, 12),
+                    safeWrapText(`${ex.extraHours} hour${ex.extraHours > 1 ? 's' : ''}`, 18),
                     fmt(ex.rate),
                     fmt(ex.total)
                 ]);
@@ -328,12 +330,13 @@ document.addEventListener('DOMContentLoaded', function () {
             body.push(["", "", "", "", "VAT 5%", fmt(vat)]);
             body.push(["", "", "", "", "TOTAL AMOUNT", fmt(total)]);
 
-            ensureSpace(70);
+            ensureSpace(80);
 
             doc.autoTable({
                 startY: cursorY,
                 theme: "grid",
                 margin: { left: MARGIN_L, right: MARGIN_R },
+                tableWidth: 'auto',
                 head: [[
                     "DATE",
                     "DESCRIPTION",
@@ -345,35 +348,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 body,
                 styles: {
                     font: "helvetica",
-                    fontSize: 6.5,
-                    cellPadding: 1.2,
-                    minCellHeight: 5.5,
-                    lineWidth: 0.2,
+                    fontSize: 10.5,
+                    cellPadding: { top: 3.2, right: 2.5, bottom: 3.2, left: 2.5 },
+                    minCellHeight: 9,
+                    lineWidth: 0.25,
                     lineColor: [0, 0, 0],
                     textColor: [0, 0, 0],
                     valign: "top",
                     halign: "left",
-                    overflow: 'linebreak'
+                    overflow: "linebreak"
                 },
                 headStyles: {
                     fillColor: [0, 0, 0],
                     textColor: 255,
                     fontStyle: "bold",
-                    fontSize: 6.5,
+                    fontSize: 10,
                     halign: "center",
                     valign: "middle",
-                    lineWidth: 0.2
+                    minCellHeight: 11,
+                    lineWidth: 0.25
                 },
                 bodyStyles: {
-                    overflow: 'linebreak'
+                    overflow: "linebreak"
                 },
                 columnStyles: {
-                    0: { cellWidth: 20 },
-                    1: { cellWidth: 70 },
-                    2: { cellWidth: 10, halign: "center" },
-                    3: { cellWidth: 22, halign: "center" },
-                    4: { cellWidth: 18, halign: "center" },
-                    5: { cellWidth: 18, halign: "center" }
+                    0: { cellWidth: 28 },
+                    1: { cellWidth: 84 },
+                    2: { cellWidth: 14, halign: "center" },
+                    3: { cellWidth: 28, halign: "center" },
+                    4: { cellWidth: 22, halign: "center" },
+                    5: { cellWidth: 22, halign: "center" }
                 },
                 didParseCell: function (data) {
                     if (data.section === "body" && data.row.index === 0 && data.column.index === 1) {
@@ -393,9 +397,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
 
                         if (label === "SUBTOTAL" || label === "VAT 5%" || label === "DISCOUNT") {
-                            if (data.row.cells[4]) {
-                                data.row.cells[4].styles.fontStyle = "bold";
-                            }
+                            if (data.row.cells[4]) data.row.cells[4].styles.fontStyle = "bold";
+                            if (data.row.cells[5]) data.row.cells[5].styles.fontStyle = "bold";
                         }
                     }
                 }
@@ -415,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
             doc.text("Notes:", MARGIN_L, cursorY);
 
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
+            doc.setFontSize(9.5);
             const lines = doc.splitTextToSize(notes.trim(), PAGE_W - MARGIN_L - MARGIN_R);
             doc.text(lines, MARGIN_L, cursorY + 5);
             cursorY += 5 + (lines.length * 4.2) + 6;

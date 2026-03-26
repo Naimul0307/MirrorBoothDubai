@@ -285,7 +285,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function descToLines(desc) {
         const clean = stripHtml(desc);
         if (!clean) return [];
-        return clean.split(/\r?\n|•/).map(x => x.trim()).filter(Boolean);
+        return clean
+            .split(/\r?\n|•|,|;/)
+            .map(x => x.trim())
+            .filter(Boolean);
     }
 
     function normalizeSpaces(value) {
@@ -300,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function safePdfText(value, max = 60) {
         return limitText(
             String(value || '')
-                .replace(/Logistic labor setup & dismantling/gi, 'Logistic setup')
+                .replace(/Logistic labor setup & dismantling/gi, 'Logistic labour setup & dismantling')
                 .replace(/Additional Hours/gi, 'Extra Hours'),
             max
         );
@@ -865,10 +868,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     </tr>`;
 
             selectedItems.forEach((it, idx) => {
-                const locTxt = (it.locations || []).map(x => safePdfText(x.name, 25)).join(', ') || '-';
-                const brTxt  = (it.branding || []).map(x => safePdfText(x.name, 25)).join(', ') || '-';
+                const locTxt = (it.locations || []).map(x => String(x.name || '')).join(', ') || '-';
+                const brTxt  = (it.branding || []).map(x => String(x.name || '')).join(', ') || '-';
                 const adTxt  = (it.addons || []).map(a => {
-                    const noteText = a.note ? ` (${safePdfText(a.note, 15)})` : '';
+                    const noteText = a.note ? ` (${a.note})` : '';
                     const qtyText = a.type === 'addon' ? ` x${a.qty || 1}` : '';
 
                     let addonPreviewTotal = Number(a.price) * Number(a.qty || 1);
@@ -881,20 +884,20 @@ document.addEventListener('DOMContentLoaded', function () {
                         : '';
 
                     return a.selectedDate
-                        ? `${safePdfText(a.name, 25)}${noteText}${qtyText} - ${formatDate(a.selectedDate)}${totalText}`
-                        : `${safePdfText(a.name, 25)}${noteText}${qtyText}${totalText}`;
+                        ? `${a.name}${noteText}${qtyText} - ${formatDate(a.selectedDate)}${totalText}`
+                        : `${a.name}${noteText}${qtyText}${totalText}`;
                 }).join(', ') || '-';
 
                 itemsListHtml += `
                     <tr>
                         <td>${idx + 1}</td>
-                        <td>${safePdfText(it.name, 35)}<br><small>${safePdfText(it.packageTimeName || '-', 20)}</small></td>
+                        <td style="white-space:normal; word-break:break-word;">${safePdfText(it.name, 35)}<br><small>${safePdfText(it.packageTimeName || '-', 20)}</small></td>
                         <td class="right">${it.qty}</td>
                         <td class="right">${getTotalDays(it)}</td>
                         <td>${getDateRangeText(it)}</td>
-                        <td>${locTxt}</td>
-                        <td>${brTxt}</td>
-                        <td>${adTxt}</td>
+                        <td style="white-space:normal; word-break:break-word;">${locTxt}</td>
+                        <td style="white-space:normal; word-break:break-word;">${brTxt}</td>
+                        <td style="white-space:normal; word-break:break-word;">${adTxt}</td>
                         <td class="right">
                             <button class="btn small" type="button" data-edit-item="${it.id}">Edit</button>
                             <button class="btn small danger" type="button" data-remove-item="${it.id}">Remove</button>
@@ -929,7 +932,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const descLines = descToLines(item.desc || "");
                 const descHtml = descLines.length
-                    ? `<div style="margin-top:6px; font-size:12px; line-height:1.4; white-space:pre-line;">${descLines.map(x => "• " + safePdfText(x, 80)).join("\n")}</div>`
+                    ? `<div style="margin-top:6px; font-size:12px; line-height:1.4; white-space:pre-line;">${descLines.map(x => "• " + x).join("\n")}</div>`
                     : "";
 
                 const packageBaseTotal = isGameReskinningItem(item)
@@ -938,41 +941,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 let rows = `
                     <tr>
-                        <td>
+                        <td style="white-space:normal; word-break:break-word;">
                             ${getDateRangeText(item)}
                             <div style="margin-top:4px; font-size:12px;">${getTotalDays(item)} day(s)</div>
                         </td>
-                        <td>
+                        <td style="white-space:normal; word-break:break-word;">
                             <b>${safePdfText(item.name, 40)}</b>
                             ${descHtml}
                         </td>
-                        <td class="right">${Number(item.qty)}</td>
-                        <td class="right">
+                        <td class="right" style="white-space:normal; word-break:break-word;">${Number(item.qty)}</td>
+                        <td class="right" style="white-space:normal; word-break:break-word;">
                             ${isGameReskinningItem(item)
                                 ? getGameReskinningDurationFromAddons(item)
                                 : formatIncludedHours(item)}
                         </td>
-                        <td class="right">${Number(item.price).toFixed(2)}</td>
-                        <td class="right">${packageBaseTotal.toFixed(2)}</td>
+                        <td class="right" style="white-space:normal; word-break:break-word;">${Number(item.price).toFixed(2)}</td>
+                        <td class="right" style="white-space:normal; word-break:break-word;">${packageBaseTotal.toFixed(2)}</td>
                     </tr>`;
-
-                (item.locations || []).forEach(loc => {
-                    rows += `
-                        <tr>
-                            <td></td>
-                            <td>Logistic setup - ${safePdfText(loc.name, 30)}</td>
-                            <td class="right">1</td>
-                            <td></td>
-                            <td class="right">${Number(loc.surcharge).toFixed(2)}</td>
-                            <td class="right">${Number(loc.surcharge).toFixed(2)}</td>
-                        </tr>`;
-                });
 
                 (item.branding || []).forEach(br => {
                     rows += `
                         <tr>
                             <td></td>
-                            <td>${safePdfText(br.name, 30)}</td>
+                            <td style="white-space:normal; word-break:break-word;">${String(br.name || '')}</td>
                             <td class="right">1</td>
                             <td></td>
                             <td class="right">${Number(br.price).toFixed(2)}</td>
@@ -980,20 +971,20 @@ document.addEventListener('DOMContentLoaded', function () {
                         </tr>`;
                 });
 
-                (item.addons || []).forEach(a => {
-                    const noteText = a.note ? ` (${safePdfText(a.note, 15)})` : '';
+                const normalAddons = (item.addons || []).filter(a => a.type !== 'advance');
+                const advanceAddons = (item.addons || []).filter(a => a.type === 'advance');
+
+                normalAddons.forEach(a => {
+                    const noteText = a.note ? ` (${a.note})` : '';
                     const title = a.selectedDate
-                        ? `${safePdfText(a.name, 30)}${noteText} - ${formatDate(a.selectedDate)}`
-                        : `${safePdfText(a.name, 30)}${noteText}`;
+                        ? `${a.name}${noteText} - ${formatDate(a.selectedDate)}`
+                        : `${a.name}${noteText}`;
                     const addonQty = Number(a.qty || 1);
 
                     let addonTotal = 0;
                     let addonDuration = '';
 
-                    if (a.type === 'advance') {
-                        addonTotal = Number(a.price) * addonQty;
-                        addonDuration = '2 hours';
-                    } else if (isGameReskinningItem(item)) {
+                    if (isGameReskinningItem(item)) {
                         addonTotal = Number(a.price) * addonQty * getTotalDays(item);
                         addonDuration = `${getTotalDays(item)} day(s)`;
                     } else {
@@ -1002,12 +993,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     rows += `
                         <tr>
-                            <td></td>
-                            <td>${title}</td>
-                            <td class="right">${addonQty}</td>
-                            <td class="right">${addonDuration}</td>
-                            <td class="right">${Number(a.price).toFixed(2)}</td>
-                            <td class="right">${addonTotal.toFixed(2)}</td>
+                            <td style="white-space:normal; word-break:break-word;"></td>
+                            <td style="white-space:normal; word-break:break-word;">${title}</td>
+                            <td class="right" style="white-space:normal; word-break:break-word;">${addonQty}</td>
+                            <td class="right" style="white-space:normal; word-break:break-word;">${addonDuration}</td>
+                            <td class="right" style="white-space:normal; word-break:break-word;">${Number(a.price).toFixed(2)}</td>
+                            <td class="right" style="white-space:normal; word-break:break-word;">${addonTotal.toFixed(2)}</td>
                         </tr>`;
                 });
 
@@ -1016,12 +1007,45 @@ document.addEventListener('DOMContentLoaded', function () {
                 extraHourRows.forEach(ex => {
                     rows += `
                         <tr>
-                            <td>${formatDate(ex.date)}</td>
-                            <td>Extra Hours (${ex.start} - ${ex.end})</td>
+                            <td style="white-space:normal; word-break:break-word;">${formatDate(ex.date)}</td>
+                            <td style="white-space:normal; word-break:break-word;">Extra Hours (${ex.start} - ${ex.end})</td>
                             <td class="right">${ex.qty}</td>
                             <td class="right">${ex.extraHours} hour${ex.extraHours > 1 ? 's' : ''}</td>
                             <td class="right">${ex.rate.toFixed(2)}</td>
                             <td class="right">${ex.total.toFixed(2)}</td>
+                        </tr>`;
+                });
+
+                (item.locations || []).forEach(loc => {
+                    rows += `
+                        <tr>
+                            <td></td>
+                            <td style="white-space:normal; word-break:break-word;">Logistic setup - ${String(loc.name || '')}</td>
+                            <td class="right">1</td>
+                            <td></td>
+                            <td class="right">${Number(loc.surcharge).toFixed(2)}</td>
+                            <td class="right">${Number(loc.surcharge).toFixed(2)}</td>
+                        </tr>`;
+                });
+
+                advanceAddons.forEach(a => {
+                    const noteText = a.note ? ` (${a.note})` : '';
+                    const title = a.selectedDate
+                        ? `${a.name}${noteText} - ${formatDate(a.selectedDate)}`
+                        : `${a.name}${noteText}`;
+
+                    const addonQty = Number(a.qty || 1);
+                    const addonTotal = Number(a.price) * addonQty;
+                    const addonDuration = '2 hours';
+
+                    rows += `
+                        <tr>
+                            <td style="white-space:normal; word-break:break-word;"></td>
+                            <td style="white-space:normal; word-break:break-word;">${title}</td>
+                            <td class="right" style="white-space:normal; word-break:break-word;">${addonQty}</td>
+                            <td class="right" style="white-space:normal; word-break:break-word;">${addonDuration}</td>
+                            <td class="right" style="white-space:normal; word-break:break-word;">${Number(a.price).toFixed(2)}</td>
+                            <td class="right" style="white-space:normal; word-break:break-word;">${addonTotal.toFixed(2)}</td>
                         </tr>`;
                 });
 
@@ -1045,7 +1069,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 packagesTable += `
                     <h3>${safePdfText(item.name, 40)} — ${getDateRangeText(item)}</h3>
-                    <table border="1" style="width:100%; border-collapse:collapse; margin-bottom:12px">
+                    <table border="1" style="width:100%; border-collapse:collapse; margin-bottom:12px; table-layout:fixed;">
                         <tr style="background:#000;color:#fff">
                             <th>DATE</th>
                             <th>DESCRIPTION</th>
@@ -1211,24 +1235,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const safeLocations = itemLocs.map(locItem => ({
             ...locItem,
-            name: safePdfText(locItem.name, 35)
+            name: String(locItem.name || '').trim()
         }));
 
         const safeBranding = itemBrands.map(brItem => ({
             ...brItem,
-            name: safePdfText(brItem.name, 35)
+            name: String(brItem.name || '').trim()
         }));
 
         const safeAddons = itemAddons.map(addon => ({
             ...addon,
-            name: safePdfText(addon.name, 35),
-            note: safePdfText(addon.note || '', 20)
+            name: String(addon.name || '').trim(),
+            note: String(addon.note || '').trim()
         }));
 
         const snapshot = {
             pkgId: pkg.id,
             name: safePdfText(pkg.name, 40),
-            desc: limitText(stripHtml(pkg.desc || ""), 180),
+            desc: stripHtml(pkg.desc || "").trim(),
             price: Number(pkg.price),
             categoryName: pkg.category_name || '',
             categorySlug: pkg.category_slug || '',

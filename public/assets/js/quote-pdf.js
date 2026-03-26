@@ -132,11 +132,15 @@ document.addEventListener('DOMContentLoaded', function () {
         function makeBulletLines(desc) {
             const clean = stripHtmlLocal(desc);
             if (!clean) return [];
-            const parts = clean.split(/\r?\n|•/).map(x => x.trim()).filter(Boolean);
-            return parts.map(x => "• " + x);
+
+            return clean
+                .split(/\r?\n|•|,|;/)
+                .map(x => x.trim())
+                .filter(Boolean)
+                .map(x => "• " + x);
         }
 
-        function breakLongWord(word, maxLen = 18) {
+        function breakLongWord(word, maxLen = 40) {
             if (!word || word.length <= maxLen) return word;
             let out = '';
             for (let i = 0; i < word.length; i += maxLen) {
@@ -146,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return out;
         }
 
-        function safeWrapText(value, maxWordLen = 18) {
+        function safeWrapText(value, maxWordLen = 40) {
             return String(value || '')
                 .split('\n')
                 .map(line =>
@@ -158,13 +162,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 .join('\n');
         }
 
-        function compactText(value) {
+        function compactText(value, maxWordLen = 40) {
             return safeWrapText(
                 String(value || '')
-                    .replace(/Logistic labor setup & dismantling/gi, 'Logistic setup')
+                    .replace(/Logistic labor setup & dismantling/gi, 'Logistic labour setup & dismantling')
                     .replace(/Additional Hours/gi, 'Extra Hours')
                     .trim(),
-                18
+                maxWordLen
             );
         }
 
@@ -232,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const descParts = [item.name];
             if (bullets.length) descParts.push(...bullets);
 
-            const descCell = descParts.join("\n");
+            const descCell = safeWrapText(descParts.join("\n"), 40);
             const dateCell = safeWrapText(
                 `${state.getDateRangeText(item)}\n${state.getTotalDays(item)} day(s)`,
                 18
@@ -256,21 +260,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 fmt(packageBaseTotal)
             ]);
 
-            (item.locations || []).forEach(loc => {
-                body.push([
-                    "",
-                    compactText(`Logistic setup - ${loc.name}`),
-                    "1",
-                    "",
-                    fmt(loc.surcharge),
-                    fmt(loc.surcharge)
-                ]);
-            });
-
             (item.branding || []).forEach(br => {
                 body.push([
                     "",
-                    compactText(br.name),
+                    safeWrapText(String(br.name || ""), 40),
                     "1",
                     "",
                     fmt(br.price),
@@ -278,14 +271,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 ]);
             });
 
-            (item.addons || []).forEach(a => {
+            const normalAddons = (item.addons || []).filter(a => {
                 const isAdvance =
                     a.type === 'advance' ||
                     String(a.name).trim().toUpperCase().includes("ADVANCE");
+                return !isAdvance;
+            });
 
+            const advanceAddons = (item.addons || []).filter(a => {
+                const isAdvance =
+                    a.type === 'advance' ||
+                    String(a.name).trim().toUpperCase().includes("ADVANCE");
+                return isAdvance;
+            });
+
+            normalAddons.forEach(a => {
                 const noteText = a.note ? ` (${a.note})` : '';
-
-                const title = isAdvance && a.selectedDate
+                const title = a.selectedDate
                     ? `${a.name}${noteText}\n${state.formatDate(a.selectedDate)}`
                     : `${a.name}${noteText}`;
 
@@ -294,21 +296,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 let addonDuration = "";
                 let addonTotal = Number(a.price) * addonQty;
 
-                if (isAdvance) {
-                    addonDuration = "2 hours";
-                    addonTotal = Number(a.price) * addonQty;
-                } else if (state.isGameReskinningItem(item)) {
+                if (state.isGameReskinningItem(item)) {
                     addonDuration = `${state.getTotalDays(item)} day(s)`;
                     addonTotal = Number(a.price) * addonQty * state.getTotalDays(item);
                 }
 
                 body.push([
                     "",
-                    compactText(title),
+                    safeWrapText(title, 40),
                     String(addonQty),
                     safeWrapText(addonDuration, 18),
-                    fmt(a.price),
-                    fmt(addonTotal)
+                    safeWrapText(fmt(a.price), 18),
+                    safeWrapText(fmt(addonTotal), 18)
                 ]);
             });
 
@@ -317,11 +316,42 @@ document.addEventListener('DOMContentLoaded', function () {
             extraHourRows.forEach(ex => {
                 body.push([
                     safeWrapText(state.formatDate(ex.date), 18),
-                    compactText(`Extra Hours (${ex.start} - ${ex.end})`),
+                    safeWrapText(`Extra Hours (${ex.start} - ${ex.end})`, 40),
                     String(ex.qty),
                     safeWrapText(`${ex.extraHours} hour${ex.extraHours > 1 ? 's' : ''}`, 18),
                     fmt(ex.rate),
                     fmt(ex.total)
+                ]);
+            });
+
+            (item.locations || []).forEach(loc => {
+                body.push([
+                    "",
+                    safeWrapText(`Logistic setup - ${loc.name}`, 40),
+                    "1",
+                    "",
+                    fmt(loc.surcharge),
+                    fmt(loc.surcharge)
+                ]);
+            });
+
+            advanceAddons.forEach(a => {
+                const noteText = a.note ? ` (${a.note})` : '';
+                const title = a.selectedDate
+                    ? `${a.name}${noteText}\n${state.formatDate(a.selectedDate)}`
+                    : `${a.name}${noteText}`;
+
+                const addonQty = Number(a.qty || 1);
+                const addonDuration = "2 hours";
+                const addonTotal = Number(a.price) * addonQty;
+
+                body.push([
+                    "",
+                    safeWrapText(title, 40),
+                    String(addonQty),
+                    safeWrapText(addonDuration, 18),
+                    safeWrapText(fmt(a.price), 18),
+                    safeWrapText(fmt(addonTotal), 18)
                 ]);
             });
 
@@ -362,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     fillColor: [0, 0, 0],
                     textColor: 255,
                     fontStyle: "bold",
-                    fontSize: 10,
+                    fontSize: 8.5,
                     halign: "center",
                     valign: "middle",
                     minCellHeight: 11,
@@ -387,18 +417,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (data.section === "body" && data.column.index === 4) {
                         const label = String(data.cell.raw || "").trim().toUpperCase();
 
+                        if (label === "SUBTOTAL" || label === "VAT 5%" || label === "DISCOUNT") {
+                            if (data.row.cells[4]) {
+                                data.row.cells[4].styles.fontStyle = "bold";
+                                data.row.cells[4].styles.fontSize = 9;
+                            }
+                            if (data.row.cells[5]) {
+                                data.row.cells[5].styles.fontStyle = "bold";
+                                data.row.cells[5].styles.fontSize = 9;
+                            }
+                        }
+
                         if (label === "TOTAL AMOUNT") {
                             for (let i = 0; i <= 5; i++) {
                                 if (data.row.cells[i]) {
                                     data.row.cells[i].styles.fillColor = [205, 220, 245];
                                     data.row.cells[i].styles.fontStyle = "bold";
+                                    data.row.cells[i].styles.fontSize = 9;
                                 }
                             }
-                        }
-
-                        if (label === "SUBTOTAL" || label === "VAT 5%" || label === "DISCOUNT") {
-                            if (data.row.cells[4]) data.row.cells[4].styles.fontStyle = "bold";
-                            if (data.row.cells[5]) data.row.cells[5].styles.fontStyle = "bold";
                         }
                     }
                 }

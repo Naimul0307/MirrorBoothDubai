@@ -9,11 +9,22 @@ return new class extends Migration {
     {
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
+
             $table->string('name');
+
             $table->decimal('price', 8, 2)->default(0);
+
             $table->text('description')->nullable();
+
             $table->string('slug')->unique();
+
             $table->integer('status')->default(1);
+
+            $table->foreignId('category_id')
+                ->nullable()
+                ->constrained('package_categories')
+                ->nullOnDelete(); // cleaner than onDelete('set null')
+
             $table->timestamps();
         });
     }

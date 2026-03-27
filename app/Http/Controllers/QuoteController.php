@@ -9,6 +9,7 @@ use App\Models\Addon;
 use App\Models\Brand;
 use App\Models\AdvanceSetup;
 use App\Models\PackageTimes;
+use App\Models\Setting;
 
 class QuoteController extends Controller
 {
@@ -24,6 +25,7 @@ class QuoteController extends Controller
         $advanceSetups = AdvanceSetup::where('status', 1)->orderBy('id', 'asc')->get();
         $brands = Brand::where('status', 1)->orderBy('id', 'asc')->get();
         $packageTimes = PackageTimes::where('status', 1)->orderBy('id', 'asc')->get();
+        $settings = Setting::find(1);
 
         $packagesData = $packages->map(function ($p) {
             $extraHourRate = 0;
@@ -101,7 +103,8 @@ class QuoteController extends Controller
             'addonsData',
             'advanceSetupsData',
             'brandingData',
-            'packageTimesData'
+            'packageTimesData',
+            'settings'
         ));
     }
 }

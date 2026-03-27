@@ -4,7 +4,6 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Service;
 use App\Models\Setting;
 use App\Models\FeaturedService;
 use Illuminate\Support\Facades\Validator;
@@ -12,7 +11,7 @@ use App\Models\Category;
 
 class SettingsController extends Controller
 {
-  public function index(){
+    public function index(){
         $settings = Setting::find(1);
 
         $categories = Category::orderBy('name','asc')->get();
@@ -32,7 +31,14 @@ class SettingsController extends Controller
 
     public function save(Request $request){
         $validator = Validator::make($request->all(),[
-            'website_title' => 'required'
+            'website_title' => 'required',
+            'quote_sender_name' => 'nullable|string|max:100',
+            'quote_sender_phone' => 'nullable|string|max:50',
+            'quote_sender_email' => 'nullable|string|max:100',
+            'quote_sender_website' => 'nullable|string|max:200',
+            'quote_footer_text' => 'nullable|string',
+            'quote_client_to_provide' => 'nullable|string',
+            'quote_terms_conditions' => 'nullable|string',
         ]);
 
         parse_str($request->categories,$categoryArray);
@@ -50,6 +56,7 @@ class SettingsController extends Controller
         if($validator->passes()) {
             // Save form values here
             $settings = Setting::find(1);
+
             if ($settings == null) {
                 $settings = new Setting;
                 $settings->website_title = $request->website_title;
@@ -66,6 +73,16 @@ class SettingsController extends Controller
                 $settings->contact_card_two = $request->contact_card_two;
                 $settings->contact_card_three = $request->contact_card_three;
                 $settings->copy = $request->copy;
+
+                // Quote PDF fields
+                $settings->quote_sender_name = $request->quote_sender_name;
+                $settings->quote_sender_phone = $request->quote_sender_phone;
+                $settings->quote_sender_email = $request->quote_sender_email;
+                $settings->quote_sender_website = $request->quote_sender_website;
+                $settings->quote_footer_text = $request->quote_footer_text;
+                $settings->quote_client_to_provide = $request->quote_client_to_provide;
+                $settings->quote_terms_conditions = $request->quote_terms_conditions;
+
                 $settings->save();
             } else {
                 $settings->website_title = $request->website_title;
@@ -82,6 +99,16 @@ class SettingsController extends Controller
                 $settings->contact_card_two = $request->contact_card_two;
                 $settings->contact_card_three = $request->contact_card_three;
                 $settings->copy = $request->copy;
+
+                // Quote PDF fields
+                $settings->quote_sender_name = $request->quote_sender_name;
+                $settings->quote_sender_phone = $request->quote_sender_phone;
+                $settings->quote_sender_email = $request->quote_sender_email;
+                $settings->quote_sender_website = $request->quote_sender_website;
+                $settings->quote_footer_text = $request->quote_footer_text;
+                $settings->quote_client_to_provide = $request->quote_client_to_provide;
+                $settings->quote_terms_conditions = $request->quote_terms_conditions;
+
                 $settings->save();
             }
 

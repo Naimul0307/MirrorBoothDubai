@@ -285,12 +285,39 @@ document.addEventListener('DOMContentLoaded', function () {
     function descToLines(desc) {
         const clean = stripHtml(desc);
         if (!clean) return [];
-        return clean
-            .split(/\r?\n|•|,|;/)
-            .map(x => x.trim())
-            .filter(Boolean);
-    }
 
+        const rawLines = clean
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(Boolean);
+
+        const lines = [];
+
+        rawLines.forEach(line => {
+            const normalized = line.replace(/^•\s*/, '').trim();
+            if (!normalized) return;
+
+            if (!lines.length) {
+                lines.push(normalized);
+                return;
+            }
+
+            const prev = lines[lines.length - 1];
+            const startsLikeNewItem = /^[A-Z0-9]/.test(normalized);
+
+            if (
+                prev &&
+                !/[.!?:)]$/.test(prev) &&
+                !startsLikeNewItem
+            ) {
+                lines[lines.length - 1] = `${prev} ${normalized}`;
+            } else {
+                lines.push(normalized);
+            }
+        });
+
+        return lines;
+    }
     function normalizeSpaces(value) {
         return String(value || '').replace(/\s+/g, ' ').trim();
     }
@@ -891,7 +918,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 itemsListHtml += `
                     <tr>
                         <td>${idx + 1}</td>
-                        <td style="white-space:normal; word-break:break-word;">${safePdfText(it.name, 35)}<br><small>${safePdfText(it.packageTimeName || '-', 20)}</small></td>
+                        <td style="white-space:normal; word-break:break-word;">
+                            ${String(it.name || '')}<br>
+                            <small>${String(it.packageTimeName || '-')}</small>
+                        </td>
                         <td class="right">${it.qty}</td>
                         <td class="right">${getTotalDays(it)}</td>
                         <td>${getDateRangeText(it)}</td>
@@ -932,7 +962,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const descLines = descToLines(item.desc || "");
                 const descHtml = descLines.length
-                    ? `<div style="margin-top:6px; font-size:12px; line-height:1.4; white-space:pre-line;">${descLines.map(x => "• " + x).join("\n")}</div>`
+                    ? `<div style="margin-top:6px; font-size:12px; line-height:1.5; font-weight:normal;">
+                        ${descLines.map(x => `<div style="font-weight:normal;">• ${x}</div>`).join("")}
+                    </div>`
                     : "";
 
                 const packageBaseTotal = isGameReskinningItem(item)
@@ -946,7 +978,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div style="margin-top:4px; font-size:12px;">${getTotalDays(item)} day(s)</div>
                         </td>
                         <td style="white-space:normal; word-break:break-word;">
-                            <b>${safePdfText(item.name, 40)}</b>
+                            <b>${String(item.name || '')}</b>
                             ${descHtml}
                         </td>
                         <td class="right" style="white-space:normal; word-break:break-word;">${Number(item.qty)}</td>
@@ -958,6 +990,21 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td class="right" style="white-space:normal; word-break:break-word;">${Number(item.price).toFixed(2)}</td>
                         <td class="right" style="white-space:normal; word-break:break-word;">${packageBaseTotal.toFixed(2)}</td>
                     </tr>`;
+
+                    
+                const extraHourRows = getItemExtraHoursBreakdown(item).filter(ex => ex.extraHours > 0);
+
+                extraHourRows.forEach(ex => {
+                    rows += `
+                        <tr>
+                            <td style="white-space:normal; word-break:break-word;">${formatDate(ex.date)}</td>
+                            <td style="white-space:normal; word-break:break-word;">Extra Hours (${ex.start} - ${ex.end})</td>
+                            <td class="right">${ex.qty}</td>
+                            <td class="right">${ex.extraHours} hour${ex.extraHours > 1 ? 's' : ''}</td>
+                            <td class="right">${ex.rate.toFixed(2)}</td>
+                            <td class="right">${ex.total.toFixed(2)}</td>
+                        </tr>`;
+                });
 
                 (item.branding || []).forEach(br => {
                     rows += `
@@ -1002,25 +1049,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         </tr>`;
                 });
 
-                const extraHourRows = getItemExtraHoursBreakdown(item).filter(ex => ex.extraHours > 0);
-
-                extraHourRows.forEach(ex => {
-                    rows += `
-                        <tr>
-                            <td style="white-space:normal; word-break:break-word;">${formatDate(ex.date)}</td>
-                            <td style="white-space:normal; word-break:break-word;">Extra Hours (${ex.start} - ${ex.end})</td>
-                            <td class="right">${ex.qty}</td>
-                            <td class="right">${ex.extraHours} hour${ex.extraHours > 1 ? 's' : ''}</td>
-                            <td class="right">${ex.rate.toFixed(2)}</td>
-                            <td class="right">${ex.total.toFixed(2)}</td>
-                        </tr>`;
-                });
-
                 (item.locations || []).forEach(loc => {
                     rows += `
                         <tr>
                             <td></td>
-                            <td style="white-space:normal; word-break:break-word;">Logistic setup - ${String(loc.name || '')}</td>
+                            <td style="white-space:normal; word-break:break-word;">Logistic labour setup & dismantling - ${String(loc.name || '')}</td>
                             <td class="right">1</td>
                             <td></td>
                             <td class="right">${Number(loc.surcharge).toFixed(2)}</td>
@@ -1068,7 +1101,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </tr>`;
 
                 packagesTable += `
-                    <h3>${safePdfText(item.name, 40)} — ${getDateRangeText(item)}</h3>
+                    <h3>${String(item.name || '')} — ${getDateRangeText(item)}</h3>
                     <table border="1" style="width:100%; border-collapse:collapse; margin-bottom:12px; table-layout:fixed;">
                         <tr style="background:#000;color:#fff">
                             <th>DATE</th>
@@ -1251,7 +1284,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const snapshot = {
             pkgId: pkg.id,
-            name: safePdfText(pkg.name, 40),
+            name: String(pkg.name || '').trim(),
             desc: stripHtml(pkg.desc || "").trim(),
             price: Number(pkg.price),
             categoryName: pkg.category_name || '',

@@ -232,6 +232,46 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
+@php
+    $quoteSettings = getSettings();
+
+    $htmlToLines = function ($html) {
+        $html = (string) $html;
+
+        $html = str_replace(['<br>', '<br/>', '<br />'], "\n", $html);
+        $html = preg_replace('/<\/p>/i', "\n", $html);
+        $html = preg_replace('/<\/div>/i', "\n", $html);
+        $html = preg_replace('/<li[^>]*>/i', '• ', $html);
+        $html = preg_replace('/<\/li>/i', "\n", $html);
+
+        $text = strip_tags($html);
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        $lines = preg_split('/\r\n|\r|\n/', $text);
+        $lines = array_map(function ($line) {
+            return trim(preg_replace('/\s+/', ' ', $line));
+        }, $lines);
+
+        return array_values(array_filter($lines, function ($line) {
+            return $line !== '';
+        }));
+    };
+
+    $htmlToText = function ($html) use ($htmlToLines) {
+        $lines = $htmlToLines($html);
+        return implode(' ', $lines);
+    };
+
+    $clientToProvide = $htmlToLines($quoteSettings?->quote_client_to_provide ?? '');
+    $termsConditions = $htmlToLines($quoteSettings?->quote_terms_conditions ?? '');
+
+    $pdfSenderName = $quoteSettings?->quote_sender_name ?: 'MAHA KHAN';
+    $pdfSenderPhone = $quoteSettings?->quote_sender_phone ?: ($quoteSettings?->phone ?: '');
+    $pdfSenderEmail = $quoteSettings?->quote_sender_email ?: ($quoteSettings?->email ?: '');
+    $pdfSenderWebsite = $quoteSettings?->quote_sender_website ?: 'www.mirrorboothdubai.com';
+    $pdfFooterText = $htmlToText($quoteSettings?->quote_footer_text ?: 'Warehouse WH-S09, Plot Number 361- 0, Umm Ramool, Dubai, 10148, Dubai, United Arab Emirates');
+@endphp
+
 <script>
 window.quoteCalculatorData = {
     packages: @json($packagesData),
@@ -241,8 +281,22 @@ window.quoteCalculatorData = {
     advanceSetups: @json($advanceSetupsData),
     branding: @json($brandingData)
 };
+
+window.quotePdfData = {
+    clientToProvide: @json($clientToProvide),
+    terms: @json($termsConditions),
+    companyDetails: {
+        senderName: @json($pdfSenderName),
+        senderPhone: @json($pdfSenderPhone),
+        senderEmail: @json($pdfSenderEmail),
+        senderWebsite: @json($pdfSenderWebsite),
+        footerText: @json($pdfFooterText)
+    }
+};
 </script>
 
 <script src="{{ asset('assets/js/quote-calculator.js') }}"></script>
 <script src="{{ asset('assets/js/quote-pdf.js') }}"></script>
 @endsection
+
+

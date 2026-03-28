@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const MARGIN_R = 7;
 
         const HEADER_H = 55;
-        const START_Y_FIRST = 60;
+        const START_Y_FIRST = 70;
         const START_Y_OTHER = 60;
         const FOOTER_H = 10;
 
@@ -118,8 +118,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 clientName !== "N/A" ? clientName : "",
                 clientAddress1 || "",
                 clientAddress2 || "",
-                clientPhone ? `P: ${clientPhone}` : "",
-                clientEmail || ""
+                clientPhone ? `Phone: ${clientPhone}` : "Phone: N/A",
+                clientEmail ? `Email: ${clientEmail}` : "Email: N/A"
             ].filter(Boolean);
 
             let yy = billY + 5;

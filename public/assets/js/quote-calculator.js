@@ -275,10 +275,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function stripHtml(s) {
         return String(s || "")
-            .replace(/<br\s*\/?>/gi, "\n")
-            .replace(/<\/p>/gi, "\n")
+            .replace(/<\s*br\s*\/?>/gi, "\n")
+            .replace(/<\s*\/p\s*>/gi, "\n")
+            .replace(/<\s*p[^>]*>/gi, "")
+            .replace(/<\s*\/div\s*>/gi, "\n")
+            .replace(/<\s*div[^>]*>/gi, "")
+            .replace(/<\s*\/li\s*>/gi, "\n")
+            .replace(/<\s*li[^>]*>/gi, "• ")
+            .replace(/<\s*\/ul\s*>/gi, "\n")
+            .replace(/<\s*\/ol\s*>/gi, "\n")
             .replace(/<[^>]*>/g, "")
-            .replace(/&nbsp;/g, " ")
+            .replace(/&nbsp;/gi, " ")
+            .replace(/&amp;/gi, "&")
+            .replace(/&lt;/gi, "<")
+            .replace(/&gt;/gi, ">")
+            .replace(/\r/g, "")
+            .replace(/\n{2,}/g, "\n")
             .trim();
     }
 
@@ -286,38 +298,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const clean = stripHtml(desc);
         if (!clean) return [];
 
-        const rawLines = clean
-            .split(/\r?\n/)
+        return clean
+            .split('\n')
             .map(line => line.trim())
+            .filter(Boolean)
+            .map(line => line.replace(/^•\s*/, '').trim())
             .filter(Boolean);
-
-        const lines = [];
-
-        rawLines.forEach(line => {
-            const normalized = line.replace(/^•\s*/, '').trim();
-            if (!normalized) return;
-
-            if (!lines.length) {
-                lines.push(normalized);
-                return;
-            }
-
-            const prev = lines[lines.length - 1];
-            const startsLikeNewItem = /^[A-Z0-9]/.test(normalized);
-
-            if (
-                prev &&
-                !/[.!?:)]$/.test(prev) &&
-                !startsLikeNewItem
-            ) {
-                lines[lines.length - 1] = `${prev} ${normalized}`;
-            } else {
-                lines.push(normalized);
-            }
-        });
-
-        return lines;
     }
+    
     function normalizeSpaces(value) {
         return String(value || '').replace(/\s+/g, ' ').trim();
     }

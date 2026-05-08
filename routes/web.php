@@ -13,6 +13,7 @@ use App\Http\Controllers\admin\AdminBrandController;
 use App\Http\Controllers\admin\AdminExtraHourController;
 use App\Http\Controllers\admin\AdminPackageTimesController;
 use App\Http\Controllers\admin\AdminPackageCategoryController;
+use App\Http\Controllers\admin\HeroSlideController;
 use App\Http\Controllers\admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\admin\LoginController as AdminLoginController;
 use App\Http\Controllers\admin\ServiceController;
@@ -80,6 +81,16 @@ Route::group(['prefix' => 'admin'],function(){
     Route::group(['middleware' => 'admin.auth'],function(){
         Route::get('logout',[AdminLoginController::class, 'logout'])->name('admin.logout');
         Route::get('dashboard',[AdminDashboardController::class,'index'])->name('admin.dashboard');
+
+        //Hero Slide Routes
+        Route::get('/hero-slides',[HeroSlideController::class,'index'])->name('heroSlideList');
+        Route::get('/hero-slides/create',[HeroSlideController::class,'create'])->name('heroSlide.create');
+        Route::post('/hero-slides/create',[HeroSlideController::class,'save'])->name('heroSlide.store');
+        Route::get('/hero-slides/edit/{id}',[HeroSlideController::class,'edit'])->name('heroSlide.edit');
+        Route::post('/hero-slides/edit/{id}',[HeroSlideController::class,'update'])->name('heroSlide.update');
+        Route::post('/hero-slides/delete/{id}',[HeroSlideController::class,'delete'])->name('heroSlide.delete');
+        Route::get('/hero-slides/get-slug',[HeroSlideController::class,'getSlug'])->name('heroSlide.slug');
+        Route::post('/hero-slides/{id}/remove-image', [HeroSlideController::class, 'removeMainImage'])->name('heroSlide.remove.image');
 
          //service route
         Route::get('/services/create',[ServiceController::class,'create'])->name('service.create.form');
@@ -150,7 +161,7 @@ Route::group(['prefix' => 'admin'],function(){
         Route::post('/addons/edit/{id}',[AdminAddonController::class,'update'])->name('addon.update');
         Route::post('/addons/delete/{id}',[AdminAddonController::class,'delete'])->name('addon.delete');
         Route::get('/addons/get-slug',[AdminAddonController::class,'getSlug'])->name('addon.slug');
-       
+
         //PackageTimes Route
         Route::get('/packageTimes',[AdminPackageTimesController::class,'index'])->name('packageTimesList');
         Route::get('/packageTimes/create',[AdminPackageTimesController::class,'create'])->name('packageTimes.create');
@@ -159,7 +170,7 @@ Route::group(['prefix' => 'admin'],function(){
         Route::post('/packageTimes/edit/{id}',[AdminPackageTimesController::class,'update'])->name('packageTimes.update');
         Route::post('/packageTimes/delete/{id}',[AdminPackageTimesController::class,'delete'])->name('packageTimes.delete');
         Route::get('/packageTimes/get-slug',[AdminPackageTimesController::class,'getSlug'])->name('packageTimes.slug');
-        
+
         //PackageCategory Route
         Route::get('/package-category', [AdminPackageCategoryController::class, 'index'])->name('packageCategoryList');
         Route::get('/package-category/create', [AdminPackageCategoryController::class, 'create'])->name('packageCategory.create');
@@ -195,7 +206,7 @@ Route::group(['prefix' => 'admin'],function(){
         Route::post('/packages/delete/{id}',[AdminPackageController::class,'delete'])->name('package.delete');
         Route::get('/packages/get-slug',[AdminPackageController::class,'getSlug'])->name('package.slug');
 
-        
+
         //Branding Route
         Route::get('/branding',[AdminBrandController::class,'index'])->name('brandingList');
         Route::get('/branding/create',[AdminBrandController::class,'create'])->name('branding.create');

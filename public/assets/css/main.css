@@ -736,58 +736,112 @@ section,
 }
 
 /*--------------------------------------------------------------
-# Hero Section
+# Hero Slider Section
 --------------------------------------------------------------*/
-/* Desktop (default) */
-#hero {
+
+.hero {
   position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#hero > div {
-  position: absolute;
-  top: 0; left: 0;
   width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-}
-
-#hero iframe {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 177.77vh; /* 16:9 ratio */
   height: 100vh;
-  min-width: 100vw;
-  min-height: 56.25vw;
+  overflow: hidden;
+}
+
+.hero .carousel,
+.hero .carousel-inner,
+.hero .carousel-item {
+  height: 100vh;
+}
+
+.hero .carousel-item {
+  position: relative;
+}
+
+.hero-slide-img {
+  width: 100%;
+  height: 100vh;
   object-fit: cover;
+}
+
+/* Dark Overlay */
+.hero-background-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1;
+}
+
+/* Content */
+.hero .container {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.hero .row {
+  height: 100%;
+}
+
+.hero .block h1 {
+  color: #fff;
+  font-size: 60px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.hero .btn-primary {
+  padding: 14px 35px;
+  font-size: 18px;
+  border-radius: 50px;
+  background: var(--accent-color);
   border: none;
-  pointer-events: none;
 }
 
-/* Mobile and Tablet */
-@media (max-width: 1319px) {
-  #hero {
-    width: 100vw;
-    height: 40vh; /* smaller height for mobile/tablet */
-  }
-  #hero iframe {
-    width: 177.77vh; /* keep ratio based on new height */
-    height: 40vh; /* match new section height */
-    min-width: 100vw;
-    min-height: 56.25vw;
-  }
+/* Slider arrows */
+.carousel-control-prev,
+.carousel-control-next {
+  z-index: 10;
 }
 
+/* Mobile */
+@media (max-width: 991px) {
+
+  .hero,
+  .hero .carousel,
+  .hero .carousel-inner,
+  .hero .carousel-item,
+  .hero-slide-img {
+    height: 70vh;
+  }
+
+  .hero .block h1 {
+    font-size: 32px;
+  }
+}
+.services-slider img {
+    content-visibility: auto;
+}
+
+/* Small Mobile */
+@media (max-width: 576px) {
+
+  .hero,
+  .hero .carousel,
+  .hero .carousel-inner,
+  .hero .carousel-item,
+  .hero-slide-img {
+    height: 60vh;
+  }
+
+  .hero .block h1 {
+    font-size: 24px;
+  }
+
+  .hero .btn-primary {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
 /*--------------------------------------------------------------
 # Hotels Section
 --------------------------------------------------------------*/

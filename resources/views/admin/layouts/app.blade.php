@@ -61,6 +61,12 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ route('heroSlideList') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Manage Hero Slides</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ route('categoryList') }}" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Manage Category</p>

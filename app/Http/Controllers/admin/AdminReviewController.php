@@ -15,7 +15,7 @@ use Intervention\Image\ImageManager;
 
 class AdminReviewController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $query = Review::orderBy('created_at', 'DESC');
 
@@ -32,6 +32,7 @@ class AdminReviewController extends Controller
         return view('admin.reviews.create');
     }
 
+
     public function save(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -39,7 +40,8 @@ class AdminReviewController extends Controller
             'slug' => 'required|unique:reviews,slug',
         ]);
 
-        if ($validator->passes()) {
+        if($validator->passes()) {
+            // Form validated successfully
 
             $review = new Review;
             $review->name = $request->name;
@@ -49,30 +51,31 @@ class AdminReviewController extends Controller
 
             if ($request->image_id > 0) {
 
-                $tempImage = TempFile::find($request->image_id);
+                $tempImage = TempFile::where('id', $request->image_id)->first();
 
                 if ($tempImage) {
 
                     $tempFileName = $tempImage->name;
                     $ext = pathinfo($tempFileName, PATHINFO_EXTENSION);
 
-                    // MAIN IMAGE = SLUG ONLY
+                    // ✅ ONLY SLUG NAME
                     $newFileName = $review->slug . '.' . $ext;
 
-                    $sourcePath = './uploads/temp/' . $tempFileName;
+                    $sourcePath = public_path('uploads/temp/' . $tempFileName);
 
                     $manager = new ImageManager(new Driver());
 
                     // SMALL
                     $img = $manager->read($sourcePath);
                     $img->cover(360, 220);
-                    $img->save('./uploads/reviews/thumb/small/' . $newFileName);
+                    $img->save(public_path('uploads/reviews/thumb/small/' . $newFileName));
 
                     // LARGE
                     $img = $manager->read($sourcePath);
                     $img->scaleDown(1150);
-                    $img->save('./uploads/reviews/thumb/large/' . $newFileName);
+                    $img->save(public_path('uploads/reviews/thumb/large/' . $newFileName));
 
+                    // save DB
                     $review->image = $newFileName;
                     $review->save();
 
@@ -80,16 +83,26 @@ class AdminReviewController extends Controller
                 }
             }
 
+            $request->session()->flash('success','Review Created Successfully');
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Review Created Successfully'
             ]);
-        }
 
-        return response()->json([
-            'status' => 0,
-            'errors' => $validator->errors()
-        ]);
+        } else {
+            // return errors
+            return response()->json([
+                'status' => 0,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function edit($id)
+    {
+        $review = Review::findOrFail($id);
+        return view('admin.reviews.edit', ['review' => $review]);
     }
 
     public function update(Request $request, $id)
@@ -102,40 +115,55 @@ class AdminReviewController extends Controller
         ]);
 
         if ($validator->passes()) {
+            // Check if review exists
+            if (empty($review)) {
+                $request->session()->flash('error', 'Record not found');
+                return response()->json([
+                    'status' => 0,
+                ]);
+            }
 
-            $oldImage = $review->image;
+            $oldImageName = $review->image;
 
             $review->name = $request->name;
             $review->slug = $request->slug;
             $review->status = $request->status;
             $review->save();
 
+            // Handle the main image update
             if ($request->image_id > 0) {
 
-                $tempImage = TempFile::find($request->image_id);
+                $tempImage = TempFile::where('id', $request->image_id)->first();
 
                 if ($tempImage) {
 
                     $tempFileName = $tempImage->name;
                     $ext = pathinfo($tempFileName, PATHINFO_EXTENSION);
 
+                    // ✅ ONLY SLUG NAME
                     $newFileName = $review->slug . '.' . $ext;
 
-                    $sourcePath = './uploads/temp/' . $tempFileName;
+                    $sourcePath = public_path('uploads/temp/' . $tempFileName);
 
                     $manager = new ImageManager(new Driver());
 
+                    // SMALL
                     $img = $manager->read($sourcePath);
                     $img->cover(360, 220);
-                    $img->save('./uploads/reviews/thumb/small/' . $newFileName);
+                    $img->save(public_path('uploads/reviews/thumb/small/' . $newFileName));
 
+                    // LARGE
                     $img = $manager->read($sourcePath);
                     $img->scaleDown(1150);
-                    $img->save('./uploads/reviews/thumb/large/' . $newFileName);
+                    $img->save(public_path('uploads/reviews/thumb/large/' . $newFileName));
 
-                    File::delete('./uploads/reviews/thumb/small/' . $oldImage);
-                    File::delete('./uploads/reviews/thumb/large/' . $oldImage);
+                    // delete old images
+                    if ($oldImageName) {
+                        File::delete(public_path('uploads/reviews/thumb/small/' . $oldImageName));
+                        File::delete(public_path('uploads/reviews/thumb/large/' . $oldImageName));
+                    }
 
+                    // save DB
                     $review->image = $newFileName;
                     $review->save();
 
@@ -143,30 +171,83 @@ class AdminReviewController extends Controller
                 }
             }
 
+            $request->session()->flash('success', 'Review updated Successfully');
+
             return redirect()->route('reviewList');
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Review Updated Successfully'
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => 0,
+                'errors' => $validator->errors()
+            ]);
+        }
+    }
+
+    public function delete(Request $request, $id)
+    {
+        $review = Review::find($id);
+        if (!$review) {
+            $request->session()->flash('error', 'Record not found');
+            return response(['status' => 0]);
         }
 
+        if ($review->image) {
+            File::delete(public_path('uploads/reviews/thumb/small/' . $review->image));
+            File::delete(public_path('uploads/reviews/thumb/large/' . $review->image));
+        }
+
+        $review->delete();
+
+        $request->session()->flash('success', 'Review deleted successfully');
+
+        return response(['status' => 1]);
+    }
+
+    public function getSlug(Request $request)
+    {
+        $slug = SlugService::createSlug(Review::class, 'slug', $request->name);
         return response()->json([
-            'status' => 0,
-            'errors' => $validator->errors()
+            'status' => true,
+            'slug' => $slug,
         ]);
     }
 
     public function removeMainImage(Request $request, $id)
     {
-        $review = Review::findOrFail($id);
+            // Find the review by ID
+            $review = Review::findOrFail($id);
+            $imageName = $request->input('image');
 
-        if ($review->image) {
-            File::delete('./uploads/reviews/thumb/small/' . $review->image);
-            File::delete('./uploads/reviews/thumb/large/' . $review->image);
-        }
+            // Check if the image exists in the database
+            if ($review->image === $imageName) {
+                // Define paths for large and small images
+                $largeImagePath = public_path('uploads/reviews/thumb/large/' . $imageName);
+                $smallImagePath = public_path('uploads/reviews/thumb/small/' . $imageName);
 
-        $review->image = null;
-        $review->save();
+                // Delete the image files from storage
+                if (file_exists($largeImagePath)) {
+                    unlink($largeImagePath);
+                }
+                if (file_exists($smallImagePath)) {
+                    unlink($smallImagePath);
+                }
 
-        return response()->json([
-            'status' => 200,
-            'message' => 'Image removed'
-        ]);
+                // Set the image field in the database to null
+                $review->image = null;
+
+                // Save the review instance
+                if ($review->save()) {
+                    return response()->json(['status' => 200, 'message' => 'Main image removed successfully']);
+                } else {
+                    return response()->json(['status' => 500, 'message' => 'Failed to remove image from the database']);
+                }
+            }
+
+            return response()->json(['status' => 400, 'message' => 'Image not found']);
     }
 }

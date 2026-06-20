@@ -24,8 +24,8 @@
     </div>
     <!-- /.content-header -->
     <!-- Main content -->
-    <section class="content  h-100"">
-        <div class="container-fluid  h-100"">
+    <section class="content  h-100">
+        <div class="container-fluid  h-100">
             <!-- Small boxes (Stat box) -->
             <div class="row">
 
@@ -124,7 +124,7 @@
                                 <tr>
                                     <td colspan="11" class="text-center">Records Not Found</td>
                                 </tr>
-                                
+
                                 @endif
                             </table>
                         </div>

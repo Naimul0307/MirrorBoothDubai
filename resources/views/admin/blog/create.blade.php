@@ -23,11 +23,11 @@
     </div>
     <!-- /.content-header -->
     <!-- Main content -->
-    <section class="content  h-100"">
-        <div class="container-fluid  h-100"">
+    <section class="content  h-100">
+        <div class="container-fluid  h-100">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                <div class="col-md-12 ">							
+                <div class="col-md-12 ">
                     <form action="" method="post" name="createBlog" id="createBlog">
                         <div class="card">
                             <div class="card-header">
@@ -56,8 +56,8 @@
                                         <input type="hidden" name="image_id" id="image_id" value="">
                                         <label for="Image">Image</label>
                                         <div id="image" class="dropzone dz-clickable">
-                                            <div class="dz-message needsclick">    
-                                                <br>Drop files here or click to upload.<br><br>                                            
+                                            <div class="dz-message needsclick">
+                                                <br>Drop files here or click to upload.<br><br>
                                             </div>
                                         </div>
                                     </div>
@@ -98,7 +98,7 @@
                             </div>
                         </div>
                     </form>
-                </div>                            
+                </div>
             </div>
             <!-- /.row -->
             <!-- /.row (main row) -->
@@ -112,8 +112,8 @@
 @section('extraJs')
 
 <script type="text/javascript">
-    Dropzone.autoDiscover = false;    
-    const dropzone = $("#image").dropzone({ 
+    Dropzone.autoDiscover = false;
+    const dropzone = $("#image").dropzone({
         init: function() {
             this.on('addedfile', function(file) {
                 if (this.files.length > 1) {
@@ -124,7 +124,7 @@
         url:  "{{ route('tempUpload') }}",
         maxFiles: 1,
         addRemoveLinks: true,
-        acceptedFiles: "image/jpeg,image/png,image/gif",
+        acceptedFiles: "image/jpeg,image/png,image/gif,image/webp,image/avif",
         headers: {
             'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
         }, success: function(file, response){
@@ -132,7 +132,7 @@
         }
     });
 
-    
+
     $("#createBlog").submit(function(event){
         event.preventDefault();
         $("button[type='submit']").prop('disabled',true);
@@ -147,7 +147,7 @@
 
                 if(response.status == 200) {
                     // no error
-                    window.location.href = '{{ route("bloglist") }}'; 
+                    window.location.href = '{{ route("bloglist") }}';
                 } else {
                     // Here we will show errors
 

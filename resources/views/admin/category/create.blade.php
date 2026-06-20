@@ -23,8 +23,8 @@
     </div>
     <!-- /.content-header -->
     <!-- Main content -->
-    <section class="content  h-100"">
-        <div class="container-fluid  h-100"">
+    <section class="content  h-100">
+        <div class="container-fluid  h-100">
             <!-- Small boxes (Stat box) -->
             <div class="row">
                 <div class="col-md-12 ">

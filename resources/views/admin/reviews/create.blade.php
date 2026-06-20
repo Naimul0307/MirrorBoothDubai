@@ -61,7 +61,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group mt-4">
                                     <label for="status">Status</label>
                                     <select name="status" id="status" class="form-control">
@@ -101,7 +101,7 @@
         url: "{{ route('tempUpload') }}",
         maxFiles: 1,
         addRemoveLinks: true,
-        acceptedFiles: "image/jpeg,image/png,image/gif,image/webp",
+        acceptedFiles: "image/jpeg,image/png,image/gif,image/webp,image/avif",
         headers: {
             'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
         },

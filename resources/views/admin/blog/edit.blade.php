@@ -23,11 +23,11 @@
     </div>
     <!-- /.content-header -->
     <!-- Main content -->
-    <section class="content  h-100"">
-        <div class="container-fluid  h-100"">
+    <section class="content  h-100">
+        <div class="container-fluid  h-100">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                <div class="col-md-12 ">							
+                <div class="col-md-12 ">
                     <form action="" method="post" name="editBlog" id="editBlog">
                         <div class="card">
                             <div class="card-header">
@@ -56,15 +56,15 @@
                                         <input type="hidden" name="image_id" id="image_id" value="">
                                         <label for="Image">Image</label>
                                         <div id="image" class="dropzone dz-clickable">
-                                            <div class="dz-message needsclick">    
-                                                <br>Drop files here or click to upload.<br><br>                                            
+                                            <div class="dz-message needsclick">
+                                                <br>Drop files here or click to upload.<br><br>
                                             </div>
                                         </div>
 
                                         @if(!empty($blog->image))
-                                        <img class="img-thumbnail my-4" src="{{ asset('uploads/blogs/thumb/small/'.$blog->image) }}" width="300">    
-                                        <button type="button" class="btn btn-danger btn-sm remove-image" data-image="{{ $blog->image }}">Remove</button>                                   
-                                        @endif                                        
+                                        <img class="img-thumbnail my-4" src="{{ asset('uploads/blogs/thumb/small/'.$blog->image) }}" width="300">
+                                        <button type="button" class="btn btn-danger btn-sm remove-image" data-image="{{ $blog->image }}">Remove</button>
+                                        @endif
                                     </div>
                                     <div class="col-md-6">
                                         <label for="">Short Description</label>
@@ -103,7 +103,7 @@
                             </div>
                         </div>
                     </form>
-                </div>                            
+                </div>
             </div>
             <!-- /.row -->
             <!-- /.row (main row) -->
@@ -117,8 +117,8 @@
 @section('extraJs')
 
 <script type="text/javascript">
-    Dropzone.autoDiscover = false;    
-    const dropzone = $("#image").dropzone({ 
+    Dropzone.autoDiscover = false;
+    const dropzone = $("#image").dropzone({
         init: function() {
             this.on('addedfile', function(file) {
                 if (this.files.length > 1) {
@@ -129,7 +129,7 @@
         url:  "{{ route('tempUpload') }}",
         maxFiles: 1,
         addRemoveLinks: true,
-        acceptedFiles: "image/jpeg,image/png,image/gif",
+        acceptedFiles: "image/jpeg,image/png,image/gif,image/webp,image/avif",,
         headers: {
             'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
         }, success: function(file, response){
@@ -152,7 +152,7 @@
             success: function(response){
                 $("button[type='submit']").prop('disabled', false);
                 if(response.status == 200) {
-                    window.location.href = '{{ route("bloglist") }}'; 
+                    window.location.href = '{{ route("bloglist") }}';
                 } else {
                     if(response.errors.name) {
                         $('.name-error').html(response.errors.name);
@@ -184,7 +184,7 @@
         })
     });
 
-    
+
     $(document).on('click', '.remove-image', function() {
     let imageName = $(this).data('image');
     $('#image_id').val(''); // Clear the image_id field

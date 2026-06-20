@@ -58,7 +58,7 @@
                                             </div>
 
                                             @if(!empty($company->image))
-                                                <img class="img-thumbnail my-4" src="{{ asset('uploads/company/thumb/large/'.$company->image) }}" width="300">
+                                                <img class="img-thumbnail my-4" src="{{ asset('uploads/companies/thumb/large/'.$company->image) }}" width="300">
                                                 <button type="button" class="btn btn-danger btn-sm remove-image" data-image="{{ $company->image }}">Remove</button>
                                             @endif
                                         </div>
@@ -101,7 +101,7 @@
         url:  "{{ route('tempUpload') }}",
         maxFiles: 1,
         addRemoveLinks: true,
-        acceptedFiles: "image/jpeg,image/png,image/webp,gif",
+        acceptedFiles: "image/jpeg,image/png,image/gif,image/webp,image/avif",
         headers: {
             'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
         },

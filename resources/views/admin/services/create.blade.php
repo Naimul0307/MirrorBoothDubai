@@ -131,7 +131,7 @@
                                     <label for="image_alt_text">Image Alt Text</label>
                                     <textarea name="image_alt_text" id="metaimage_alt_text_keywords" cols="30" rows="7" class="form-control"  placeholder="MAX 160 CHARACTERS"></textarea>
                                 </div>
-                                
+
                                 <div class="form-group mt-4">
                                     <label for="status">Status</label>
                                     <select name="status" id="status" class="form-control">
@@ -171,7 +171,7 @@
         url: "{{ route('tempUpload') }}",
         maxFiles: 1,
         addRemoveLinks: true,
-        acceptedFiles: "image/jpeg,image/png,image/gif,image/webp",
+        acceptedFiles: "image/jpeg,image/png,image/gif,image/webp,image/avif",
         headers: {
             'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
         },
@@ -185,7 +185,7 @@
         url: "{{ route('uploadGalleryImage') }}",  // Assuming same route for temporary uploads
         maxFiles: null,
         addRemoveLinks: true,
-        acceptedFiles: "image/jpeg,image/png,image/gif,image/webp",
+        acceptedFiles: "image/jpeg,image/png,image/gif,image/webp,image/avif",
         headers: {
             'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
         },

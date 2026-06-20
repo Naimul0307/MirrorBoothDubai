@@ -23,11 +23,11 @@
     </div>
     <!-- /.content-header -->
     <!-- Main content -->
-    <section class="content  h-100"">
-        <div class="container-fluid  h-100"">
+    <section class="content  h-100">
+        <div class="container-fluid  h-100">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                <div class="col-md-12 ">							
+                <div class="col-md-12 ">
                     <form action="" method="post" name="createFaq" id="createFaq">
                         <div class="card">
                             <div class="card-header">
@@ -43,7 +43,7 @@
                                 <div class="form-group">
                                     <label for="name">Answer</label>
                                     <textarea name="answer" id="answer" class="summernote" ></textarea>
-                                </div>                                
+                                </div>
 
                                 <div class="form-group mt-4">
                                     <label for="status">Status</label>
@@ -57,7 +57,7 @@
                             </div>
                         </div>
                     </form>
-                </div>                            
+                </div>
             </div>
             <!-- /.row -->
             <!-- /.row (main row) -->
@@ -85,7 +85,7 @@
 
                 if(response.status == 200) {
                     // no error
-                    window.location.href = '{{ route("faqList") }}'; 
+                    window.location.href = '{{ route("faqList") }}';
                 } else {
                     // Here we will show errors
                     $('.question-error').html(response.errors.question);

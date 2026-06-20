@@ -74,72 +74,75 @@ class ServiceController extends Controller
 
             if ($request->image_id > 0) {
                 $tempImage = TempFile::where('id', $request->image_id)->first();
-                $tempFileName = $tempImage->name;
-                $imageArray = explode('.', $tempFileName);
-                $ext = end($imageArray);
 
-                // Replace ID with Slug in the new file name
-                $newFileName = $tempFileName . '-' . $service->slug . '.' . $ext;
+                if ($tempImage) {
 
-                $sourcePath = './uploads/temp/' . $tempFileName;
+                    $tempFileName = $tempImage->name;
+                    $ext = pathinfo($tempFileName, PATHINFO_EXTENSION);
 
-                // Generate Small Thumbnail
-                $dPath = './uploads/services/thumb/small/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->cover(360, 220);
-                $img->save($dPath);
+                    // 🔥 MAIN IMAGE = SLUG ONLY
+                    $newFileName = $service->slug . '.' . $ext;
 
-                // Generate Large Thumbnail
-                $dPath = './uploads/services/thumb/large/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->scaleDown(1150);
-                $img->save($dPath);
+                    $sourcePath = './uploads/temp/' . $tempFileName;
 
-                // Save new file name in the database
-                $service->image = $newFileName;
-                $service->save();
+                    // Generate Small Thumbnail
+                    $dPath = './uploads/services/thumb/small/' . $newFileName;
+                    $manager = new ImageManager(new Driver());
+                    $img = $manager->read($sourcePath);
+                    $img->cover(360, 220);
+                    $img->save($dPath);
 
-                // Delete temp file
-                File::delete($sourcePath);
+                    // Generate Large Thumbnail
+                    $dPath = './uploads/services/thumb/large/' . $newFileName;
+                    $manager = new ImageManager(new Driver());
+                    $img = $manager->read($sourcePath);
+                    $img->scaleDown(1150);
+                    $img->save($dPath);
+
+                    $service->image = $newFileName;
+                    $service->save();
+
+                    File::delete($sourcePath);
+                }
             }
-
             // Gallery images handling
-            if ($request->has('gallery_images') && $request->image_id > 0) {
+            if ($request->has('gallery_images')) {
+
                 $galleryImageIds = explode(',', $request->gallery_images);
                 $galleryImagePaths = [];
+                $counter = 1;
 
                 foreach ($galleryImageIds as $imageId) {
-                    $tempImage = TempFile::where('id', $imageId)->first();
-                    if ($tempImage) {
-                        $tempFileName = $tempImage->name;
-                        $imageArray = explode('.', $tempFileName);
-                        $ext = end($imageArray);
 
-                        // Use slug instead of ID for gallery image name
-                        $newFileName = $tempFileName . '-' . $service->slug . '.' . $ext;
+                    $tempImage = TempFile::where('id', $imageId)->first();
+
+                    if ($tempImage) {
+
+                        $tempFileName = $tempImage->name;
+                        $ext = pathinfo($tempFileName, PATHINFO_EXTENSION);
+
+                        // 🔥 SLUG + NUMBERING
+                        $newFileName = $service->slug . '-' . $counter . '.' . $ext;
 
                         $sourcePath = './uploads/temp/' . $tempFileName;
 
-                        // Save original size
                         $dPath = './uploads/services/gallery/' . $newFileName;
+
                         $manager = new ImageManager(new Driver());
                         $img = $manager->read($sourcePath);
                         $img->save($dPath);
 
                         $galleryImagePaths[] = $newFileName;
 
-                        // Optionally delete temp file
                         File::delete($sourcePath);
+
+                        $counter++;
                     }
                 }
 
-                // Store gallery images paths in the service table
                 $service->gallery_images = json_encode($galleryImagePaths);
                 $service->save();
             }
-
             $request->session()->flash('success','Service Created Successfully');
 
             return response()->json([
@@ -212,85 +215,83 @@ class ServiceController extends Controller
 
             // Handle the main image update
             if ($request->image_id > 0) {
+
                 $tempImage = TempFile::where('id', $request->image_id)->first();
-                $tempFileName = $tempImage->name;
-                $imageArray = explode('.', $tempFileName);
-                $ext = end($imageArray);
 
-                $newFileName = pathinfo($tempFileName, PATHINFO_FILENAME) . '-' . $service->slug . '.' . $ext;
+                if ($tempImage) {
 
-                $sourcePath = './uploads/temp/' . $tempFileName;
+                    $tempFileName = $tempImage->name;
+                    $ext = pathinfo($tempFileName, PATHINFO_EXTENSION);
 
-                // Generate Small Thumbnail
-                $dPath = './uploads/services/thumb/small/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->cover(360,220);
-                $img->save($dPath);
+                    // 🔥 SLUG ONLY
+                    $newFileName = $service->slug . '.' . $ext;
 
-                // Delete old small thumbnail
-                $sourcePathSmall = './uploads/services/thumb/small/' . $oldImageName;
-                File::delete($sourcePathSmall);
+                    $sourcePath = './uploads/temp/' . $tempFileName;
 
-                // Generate Large Thumbnail
-                $dPath = './uploads/services/thumb/large/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->scaleDown(1150);
-                $img->save($dPath);
+                    $manager = new ImageManager(new Driver());
 
-                // Delete old large thumbnail
-                $sourcePathLarge = './uploads/services/thumb/large/' . $oldImageName;
-                File::delete($sourcePathLarge);
+                    $img = $manager->read($sourcePath);
+                    $img->cover(360, 220);
+                    $img->save('./uploads/services/thumb/small/' . $newFileName);
 
-                $service->image = $newFileName;
-                $service->save();
+                    $img = $manager->read($sourcePath);
+                    $img->scaleDown(1150);
+                    $img->save('./uploads/services/thumb/large/' . $newFileName);
 
-                File::delete($sourcePath);
+                    File::delete('./uploads/services/thumb/small/' . $oldImageName);
+                    File::delete('./uploads/services/thumb/large/' . $oldImageName);
+
+                    $service->image = $newFileName;
+                    $service->save();
+
+                    File::delete($sourcePath);
+                }
             }
 
             // Handling gallery images
             if ($request->has('gallery_images')) {
-                $galleryImageIds = explode(',', $request->gallery_images);
-                $galleryImagePaths = [];
 
-                // Add old gallery images
+                $galleryImageIds = explode(',', $request->gallery_images);
+
+                $existing = [];
                 if (!empty($service->gallery_images)) {
-                    $existingGalleryImages = json_decode($service->gallery_images);
-                    $galleryImagePaths = array_merge($galleryImagePaths, $existingGalleryImages);
+                    $existing = json_decode($service->gallery_images, true);
                 }
 
-                // Add new gallery images
-                foreach ($galleryImageIds as $imageId) {
-                    $tempImage = TempFile::where('id', $imageId)->first();
-                    if ($tempImage) {
-                        $tempFileName = $tempImage->name;
-                        $imageArray = explode('.', $tempFileName);
-                        $ext = end($imageArray);
+                $galleryImagePaths = $existing;
+                $counter = count($existing) + 1;
 
-                        // Use slug instead of ID for gallery image name
-                        $newFileName = $tempFileName . '-' . $service->slug . '.' . $ext;
+                foreach ($galleryImageIds as $imageId) {
+
+                    $tempImage = TempFile::where('id', $imageId)->first();
+
+                    if ($tempImage) {
+
+                        $tempFileName = $tempImage->name;
+                        $ext = pathinfo($tempFileName, PATHINFO_EXTENSION);
+
+                        // 🔥 slug-1, slug-2...
+                        $newFileName = $service->slug . '-' . $counter . '.' . $ext;
 
                         $sourcePath = './uploads/temp/' . $tempFileName;
 
-                        // Save original size image
                         $dPath = './uploads/services/gallery/' . $newFileName;
+
                         $manager = new ImageManager(new Driver());
                         $img = $manager->read($sourcePath);
                         $img->save($dPath);
 
                         $galleryImagePaths[] = $newFileName;
 
-                        // Optionally delete the temp image
                         File::delete($sourcePath);
+
+                        $counter++;
                     }
                 }
 
-                // Store gallery image paths in the service table as a JSON string
                 $service->gallery_images = json_encode($galleryImagePaths);
                 $service->save();
             }
-
             $request->session()->flash('success', 'Service updated Successfully');
 
             return redirect()->route('serviceList'); // Redirect to service list route

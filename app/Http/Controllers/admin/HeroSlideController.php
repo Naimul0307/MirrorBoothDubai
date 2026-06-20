@@ -44,44 +44,43 @@ class HeroSlideController extends Controller
         if($validator->passes()) {
             // Form validated successfully
 
-            $company = new HeroSlide;
-            $company->name = $request->name;
-            $company->slug = $request->slug;
-            $company->status = $request->status;
-            $company->save();
+            $heroSlide = new HeroSlide;
+            $heroSlide->name = $request->name;
+            $heroSlide->slug = $request->slug;
+            $heroSlide->status = $request->status;
+            $heroSlide->save();
 
             if ($request->image_id > 0) {
+
                 $tempImage = TempFile::where('id', $request->image_id)->first();
-                $tempFileName = $tempImage->name;
-                $imageArray = explode('.', $tempFileName);
-                $ext = end($imageArray);
 
-                // Replace ID with Slug in the new file name
-                $newFileName = $tempFileName . '-' . $company->slug . '.' . $ext;
+                if ($tempImage) {
 
-                $sourcePath = './uploads/temp/' . $tempFileName;
+                    $tempFileName = $tempImage->name;
+                    $ext = pathinfo($tempFileName, PATHINFO_EXTENSION);
 
-                // Generate Small Thumbnail
-                $dPath = './uploads/hero_slides/thumb/small/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->cover(360, 220);
-                $img->save($dPath);
+                    // ✅ SLUG ONLY
+                    $newFileName = $heroSlide->slug . '.' . $ext;
 
-                // Generate Large Thumbnail
-                $dPath = './uploads/hero_slides/thumb/large/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->scaleDown(1150);
-                $img->save($dPath);
+                    $sourcePath = './uploads/temp/' . $tempFileName;
 
+                    $manager = new ImageManager(new Driver());
 
-                // Save new file name in the database
-                $company->image = $newFileName;
-                $company->save();
+                    // Small
+                    $img = $manager->read($sourcePath);
+                    $img->cover(360,220);
+                    $img->save('./uploads/hero_slides/thumb/small/' . $newFileName);
 
-                // Delete temp file
-                File::delete($sourcePath);
+                    // Large
+                    $img = $manager->read($sourcePath);
+                    $img->scaleDown(1150);
+                    $img->save('./uploads/hero_slides/thumb/large/' . $newFileName);
+
+                    $heroSlide->image = $newFileName;
+                    $heroSlide->save();
+
+                    File::delete($sourcePath);
+                }
             }
 
             $request->session()->flash('success','Hero Slide Created Successfully');
@@ -135,43 +134,38 @@ class HeroSlideController extends Controller
 
             // Handle the main image update
             if ($request->image_id > 0) {
+
                 $tempImage = TempFile::where('id', $request->image_id)->first();
-                $tempFileName = $tempImage->name;
-                $imageArray = explode('.', $tempFileName);
-                $ext = end($imageArray);
 
-                $newFileName = pathinfo($tempFileName, PATHINFO_FILENAME) . '-' . $heroSlide->slug . '.' . $ext;
+                if ($tempImage) {
 
-                $sourcePath = './uploads/temp/' . $tempFileName;
+                    $tempFileName = $tempImage->name;
+                    $ext = pathinfo($tempFileName, PATHINFO_EXTENSION);
 
-                // Generate Small Thumbnail
-                $dPath = './uploads/hero_slides/thumb/small/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->cover(360,220);
-                $img->save($dPath);
+                    // ✅ SLUG ONLY
+                    $newFileName = $heroSlide->slug . '.' . $ext;
 
-                // Delete old small thumbnail
-                $sourcePathSmall = './uploads/hero_slides/thumb/small/' . $oldImageName;
-                File::delete($sourcePathSmall);
+                    $sourcePath = './uploads/temp/' . $tempFileName;
 
-                // Generate Large Thumbnail
-                $dPath = './uploads/hero_slides/thumb/large/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->scaleDown(1150);
-                $img->save($dPath);
+                    $manager = new ImageManager(new Driver());
 
-                // Delete old large thumbnail
-                $sourcePathLarge = './uploads/hero_slides/thumb/large/' . $oldImageName;
-                File::delete($sourcePathLarge);
+                    $img = $manager->read($sourcePath);
+                    $img->cover(360,220);
+                    $img->save('./uploads/hero_slides/thumb/small/' . $newFileName);
 
-                $heroSlide->image = $newFileName;
-                $heroSlide->save();
+                    $img = $manager->read($sourcePath);
+                    $img->scaleDown(1150);
+                    $img->save('./uploads/hero_slides/thumb/large/' . $newFileName);
 
-                File::delete($sourcePath);
+                    File::delete('./uploads/hero_slides/thumb/small/' . $oldImageName);
+                    File::delete('./uploads/hero_slides/thumb/large/' . $oldImageName);
+
+                    $heroSlide->image = $newFileName;
+                    $heroSlide->save();
+
+                    File::delete($sourcePath);
+                }
             }
-
             $request->session()->flash('success', 'Hero Slide updated Successfully');
 
             return redirect()->route('heroSlideList');

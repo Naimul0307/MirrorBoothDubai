@@ -50,37 +50,37 @@ class AdminCompanyController extends Controller
             $company->save();
 
             if ($request->image_id > 0) {
+
                 $tempImage = TempFile::where('id', $request->image_id)->first();
-                $tempFileName = $tempImage->name;
-                $imageArray = explode('.', $tempFileName);
-                $ext = end($imageArray);
 
-                // Replace ID with Slug in the new file name
-                $newFileName = $tempFileName . '-' . $company->slug . '.' . $ext;
+                if ($tempImage) {
 
-                $sourcePath = './uploads/temp/' . $tempFileName;
+                    $tempFileName = $tempImage->name;
+                    $ext = pathinfo($tempFileName, PATHINFO_EXTENSION);
 
-                // Generate Small Thumbnail
-                $dPath = './uploads/companies/thumb/small/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->cover(360, 220);
-                $img->save($dPath);
+                    // ✅ SLUG ONLY
+                    $newFileName = $company->slug . '.' . $ext;
 
-                // Generate Large Thumbnail
-                $dPath = './uploads/companies/thumb/large/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->scaleDown(1150);
-                $img->save($dPath);
+                    $sourcePath = './uploads/temp/' . $tempFileName;
 
-                
-                // Save new file name in the database
-                $company->image = $newFileName;
-                $company->save();
+                    $manager = new ImageManager(new Driver());
 
-                // Delete temp file
-                File::delete($sourcePath);
+                    $img = $manager->read($sourcePath);
+                    $img->cover(360,220);
+                    $img->save('./uploads/companies/thumb/small/' . $newFileName);
+
+                    $img = $manager->read($sourcePath);
+                    $img->scaleDown(1150);
+                    $img->save('./uploads/companies/thumb/large/' . $newFileName);
+
+                    File::delete('./uploads/companies/thumb/small/' . $oldImageName);
+                    File::delete('./uploads/companies/thumb/large/' . $oldImageName);
+
+                    $company->image = $newFileName;
+                    $company->save();
+
+                    File::delete($sourcePath);
+                }
             }
 
             $request->session()->flash('success','Company Created Successfully');
@@ -132,46 +132,42 @@ class AdminCompanyController extends Controller
 
             // Handle the main image update
             if ($request->image_id > 0) {
+
                 $tempImage = TempFile::where('id', $request->image_id)->first();
-                $tempFileName = $tempImage->name;
-                $imageArray = explode('.', $tempFileName);
-                $ext = end($imageArray);
 
-                $newFileName = pathinfo($tempFileName, PATHINFO_FILENAME) . '-' . $company->slug . '.' . $ext;
+                if ($tempImage) {
 
-                $sourcePath = './uploads/temp/' . $tempFileName;
+                    $tempFileName = $tempImage->name;
+                    $ext = pathinfo($tempFileName, PATHINFO_EXTENSION);
 
-                // Generate Small Thumbnail
-                $dPath = './uploads/companies/thumb/small/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->cover(360,220);
-                $img->save($dPath);
+                    // ✅ SLUG ONLY
+                    $newFileName = $company->slug . '.' . $ext;
 
-                // Delete old small thumbnail
-                $sourcePathSmall = './uploads/companies/thumb/small/' . $oldImageName;
-                File::delete($sourcePathSmall);
+                    $sourcePath = './uploads/temp/' . $tempFileName;
 
-                // Generate Large Thumbnail
-                $dPath = './uploads/companies/thumb/large/' . $newFileName;
-                $manager = new ImageManager(new Driver());
-                $img = $manager->read($sourcePath);
-                $img->scaleDown(1150);
-                $img->save($dPath);
+                    $manager = new ImageManager(new Driver());
 
-                // Delete old large thumbnail
-                $sourcePathLarge = './uploads/companies/thumb/large/' . $oldImageName;
-                File::delete($sourcePathLarge);
+                    $img = $manager->read($sourcePath);
+                    $img->cover(360,220);
+                    $img->save('./uploads/companies/thumb/small/' . $newFileName);
 
-                $company->image = $newFileName;
-                $company->save();
+                    $img = $manager->read($sourcePath);
+                    $img->scaleDown(1150);
+                    $img->save('./uploads/companies/thumb/large/' . $newFileName);
 
-                File::delete($sourcePath);
+                    File::delete('./uploads/companies/thumb/small/' . $oldImageName);
+                    File::delete('./uploads/companies/thumb/large/' . $oldImageName);
+
+                    $company->image = $newFileName;
+                    $company->save();
+
+                    File::delete($sourcePath);
+                }
             }
 
             $request->session()->flash('success', 'Company updated Successfully');
 
-            return redirect()->route('companyList'); 
+            return redirect()->route('companyList');
 
             return response()->json([
                 'status' => 200,

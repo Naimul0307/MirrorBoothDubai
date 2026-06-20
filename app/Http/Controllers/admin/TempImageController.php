@@ -8,22 +8,21 @@ use App\Models\TempFile;
 
 class TempImageController extends Controller
 {
-  public function upload(Request $request) {
-        $temp = new TempFile;
-        $temp->name = 'TEMP VALUE';
+    public function upload(Request $request)
+    {
+        $temp = new TempFile();
+        $temp->name = 'temp';
         $temp->save();
 
         $image = $request->file('file');
-        $destinationPath = './uploads/temp/';
 
-        // Make sure folder exists
+        $destinationPath = './uploads/temp/';
         if (!file_exists($destinationPath)) {
             mkdir($destinationPath, 0777, true);
         }
 
         $extension = $image->getClientOriginalExtension();
-        $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
-        $newFileName = $originalName . '-' . uniqid() . '.' . $extension;
+        $newFileName = uniqid() . '.' . $extension;
 
         $image->move($destinationPath, $newFileName);
 
@@ -37,29 +36,24 @@ class TempImageController extends Controller
         ]);
     }
 
-    public function uploadGalleryImage(Request $request) {
-        $temp = new TempFile;
-        $temp->name = 'TEMP VALUE';
-        $temp->save(); // Creates a blank entry in DB
+    public function uploadGalleryImage(Request $request)
+    {
+        $temp = new TempFile();
+        $temp->name = 'temp';
+        $temp->save();
 
         $image = $request->file('file');
-        $destinationPath = './uploads/temp/';
 
-        // Create directory if it doesn't exist
+        $destinationPath = './uploads/temp/';
         if (!file_exists($destinationPath)) {
             mkdir($destinationPath, 0777, true);
         }
 
         $extension = $image->getClientOriginalExtension();
-        $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+        $newFileName = uniqid() . '.' . $extension;
 
-        // Avoid conflicts by appending a unique ID
-        $newFileName = $originalName . '-' . uniqid() . '.' . $extension;
-
-        // Move the uploaded file
         $image->move($destinationPath, $newFileName);
 
-        // Update DB entry with actual file name
         $temp->name = $newFileName;
         $temp->save();
 

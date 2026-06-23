@@ -1,55 +1,43 @@
 /* Slider */
-.slick-slider
-{
+.slick-slider {
     position: relative;
-
     display: block;
     box-sizing: border-box;
 
     -webkit-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 
     -webkit-touch-callout: none;
     -khtml-user-select: none;
     -ms-touch-action: pan-y;
-        touch-action: pan-y;
+    touch-action: pan-y;
     -webkit-tap-highlight-color: transparent;
 }
 
-.slick-list
-{
+.slick-list {
     position: relative;
-
     display: block;
     overflow: hidden;
-
     margin: 0;
     padding: 0;
 }
-.slick-list:focus
-{
+
+.slick-list:focus {
     outline: none;
 }
-.slick-list.dragging
-{
+
+.slick-list.dragging {
     cursor: pointer;
-    cursor: hand;
 }
 
 .slick-slider .slick-track,
-.slick-slider .slick-list
-{
-    -webkit-transform: translate3d(0, 0, 0);
-       -moz-transform: translate3d(0, 0, 0);
-        -ms-transform: translate3d(0, 0, 0);
-         -o-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
+.slick-slider .slick-list {
+    transform: translate3d(0, 0, 0);
 }
 
-.slick-track
-{
+.slick-track {
     position: relative;
     top: 0;
     left: 0;
@@ -58,62 +46,251 @@
     margin-left: auto;
     margin-right: auto;
 }
-.slick-track:before,
-.slick-track:after
-{
-    display: table;
 
+.slick-track:before,
+.slick-track:after {
+    display: table;
     content: '';
 }
-.slick-track:after
-{
+
+.slick-track:after {
     clear: both;
 }
-.slick-loading .slick-track
-{
+
+.slick-loading .slick-track {
     visibility: hidden;
 }
 
-.slick-slide
-{
+.slick-slide {
     display: none;
     float: left;
-
     height: 100%;
     min-height: 1px;
 }
-[dir='rtl'] .slick-slide
-{
+
+[dir='rtl'] .slick-slide {
     float: right;
 }
-.slick-slide img
-{
+
+.slick-slide img {
     display: block;
+    width: 100%;
 }
-.slick-slide.slick-loading img
-{
+
+.slick-slide.slick-loading img {
     display: none;
 }
-.slick-slide.dragging img
-{
+
+.slick-slide.dragging img {
     pointer-events: none;
 }
-.slick-initialized .slick-slide
-{
+
+.slick-initialized .slick-slide {
     display: block;
 }
-.slick-loading .slick-slide
-{
+
+.slick-loading .slick-slide {
     visibility: hidden;
 }
-.slick-vertical .slick-slide
-{
+
+.slick-vertical .slick-slide {
     display: block;
-
     height: auto;
-
     border: 1px solid transparent;
 }
+
 .slick-arrow.slick-hidden {
     display: none;
+}
+
+/* ==========================================
+   CUSTOM ARROWS
+========================================== */
+
+/* Remove default Slick arrows */
+.slick-prev:before,
+.slick-next:before {
+    display: none !important;
+    content: '' !important;
+}
+
+/* Slider wrappers */
+.services-slider,
+.companies-slider,
+.reviews-slider {
+    position: relative;
+}
+
+/* Arrow buttons */
+.slick-prev,
+.slick-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+/* Left arrow */
+.slick-prev {
+    left: -40px !important;
+}
+
+/* Right arrow */
+.slick-next {
+    right: -40px !important;
+}
+
+/* Font Awesome icon */
+.slick-prev i,
+.slick-next i {
+    font-size: 40px !important;
+    color: rgb(215, 44, 95) !important;
+    transition: all 0.3s ease;
+}
+
+/* Font Awesome 7 SVG support */
+.slick-prev svg,
+.slick-next svg {
+    width: 40px !important;
+    height: 40px !important;
+    color: rgb(215, 44, 95) !important;
+}
+
+/* ==========================================
+   SERVICES CARD
+========================================== */
+
+.service-slide {
+    padding: 10px;
+}
+
+.service-slide .card {
+    height: 100%;
+}
+
+/* ==========================================
+   COMPANY LOGOS
+========================================== */
+
+.supporter-logo {
+    padding: 10px;
+    text-align: center;
+}
+
+.supporter-logo img {
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .slick-prev {
+        left: -10px;
+    }
+
+    .slick-next {
+        right: -10px;
+    }
+
+    .slick-prev,
+    .slick-next {
+        width: 40px;
+        height: 40px;
+    }
+
+    .slick-prev i,
+    .slick-next i,
+    .slick-prev svg,
+    .slick-next svg {
+        font-size: 20px !important;
+        width: 20px !important;
+        height: 20px !important;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .slick-prev {
+        left: 0;
+    }
+
+    .slick-next {
+        right: 0;
+    }
+}
+
+
+/* =========================
+   SLIDER ITEM ALIGNMENT
+========================= */
+
+.slider-item {
+    width: 100%;
+}
+
+/* =========================
+   SLICK ARROWS
+========================= */
+/* =========================
+   SLICK ARROWS POSITION FIX
+========================= */
+
+.slick-prev,
+.slick-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    background: transparent;
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* LEFT ARROW */
+.slick-prev {
+    left: -15px; /* adjust this if needed */
+}
+
+/* RIGHT ARROW */
+.slick-next {
+    right: -15px; /* adjust this if needed */
+}
+
+/* ICON STYLE */
+.slick-prev i,
+.slick-next i {
+    font-size: 30px;
+    color: rgb(215, 44, 95);
+    transition: 0.3s ease;
+}
+
+/* hover effect */
+.slick-prev:hover i,
+.slick-next:hover i {
+    color: rgb(245, 56, 113);
+}
+
+/* Position tweak (optional safe) */
+.slick-prev {
+    left: -10px;
+}
+
+.slick-next {
+    right: -10px;
 }

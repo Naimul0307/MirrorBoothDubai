@@ -1,100 +1,59 @@
-/* Hero Section */
-.hero {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-}
-
-.hero .carousel-item {
-    height: 80vh; /* Reduce height for background video */
-}
-
-.hero .carousel-item video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-}
-
-.hero .hero-background-overlay {
-    background-color: rgba(0, 0, 0, 0.5);
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 10;
-}
-
-.hero .container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 20;
-    text-align: center;
-    padding: 10px;
-    max-width: 100%;
-}
-
-.hero .block h1 {
-    font-size: 3vw; /* Responsive font size */
-    font-weight: bolder;
-    line-height: 1.2;
-    color: #FFF;
-    max-width: 90%; /* Force heading into two lines */
-    margin: 0 auto; /* Center the heading */
-    white-space: normal; /* Ensure text can wrap */
-}
-
-.hero .btn-container {
-    margin-top: 20px;
-}
-
-.hero .btn-primary {
-    padding: 10px 20px;
-    text-transform: uppercase;
-    font-size: 1.2rem;
-}
-
-
-/* General Styles */
+/* ─── GENERAL NAV BAR ─── */
 .nav-bar {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    list-style: none;
-    background-color: transparent; /* Start with transparent */
-    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
     align-items: center;
+    background-color: transparent;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     position: fixed;
     z-index: 40;
+    /* ✅ increased navbar height */
+    min-height: 80px;
+    padding: 0 20px;
 }
-.dropdown-toggle::after{
+
+.dropdown-toggle::after {
     display: none;
 }
-/* Desktop Style When Scrolled */
-.desktop-nav .nav-bar.scrolled {
-    background-color: black; /* Black background when scrolled */
-    transform: translateY(0); /* Ensure it's in the view */
+
+/* ─── LOGO IMAGE ─── */
+/* ✅ height: auto preserves natural aspect ratio */
+.logo-img {
+    display: block;
+    height: auto;
+    object-fit: contain;
 }
 
-.desktop-nav .logo img {
-    width: 200px;
-    margin-left: 50px;
-}
-
-/* Desktop Navbar */
+/* ─── DESKTOP NAV ─── */
 .desktop-nav {
     display: flex;
 }
 
-/* Hide the menu in desktop view */
+.desktop-nav .nav-bar {
+    min-height: 80px; /* ✅ taller desktop navbar */
+}
+
+.desktop-nav .nav-bar.scrolled {
+    background-color: black;
+}
+
+/* ✅ replaced .desktop-nav .logo img with .logo-img class */
+.desktop-nav .logo-img {
+    width: 220px;
+    height: auto;
+    margin-left: 30px;
+}
+
 .desktop-nav .menu {
     display: flex;
     list-style: none;
     flex-wrap: wrap;
-    margin-right: 100px;
+    align-items: center;
+    margin-right: 80px;
+    padding: 0;
+    margin-bottom: 0;
+    gap: 0;
 }
 
 .desktop-nav .menu li {
@@ -107,6 +66,12 @@
     color: white;
     text-transform: uppercase;
     transition: 0.15s ease-in-out;
+    line-height: 80px; /* ✅ vertically centers links in taller navbar */
+    display: block;
+}
+
+.desktop-nav .menu li a:hover {
+    color: #f16ab5;
 }
 
 .desktop-nav .dropdown-menu {
@@ -114,71 +79,91 @@
     position: absolute;
     top: 100%;
     left: 0;
-    background-color: rgba(241, 106, 181, 0.767);
+    background-color: #111;
     z-index: 50;
+    padding: 0;
+    min-width: 220px;
+    list-style: none;
 }
 
-.desktop-nav .dropdown-menu li{
-    padding: 20px;
-}
-
-.desktop-nav .menu li:hover .dropdown-menu {
+.desktop-nav .dropdown-menu.show {
     display: block;
 }
 
-
-.mobile-nav {
-    display: none;
+.desktop-nav .dropdown-menu li {
+    padding: 0;
 }
 
-/* Mobile Navbar Style When Scrolled */
-.mobile-nav .nav-bar.scrolled {
-    background-color: black; /* Change background color when scrolled */
-    transform: translateY(0); /* Ensure it's in the view */
+.desktop-nav .dropdown-menu li a {
+    display: block;
+    padding: 14px 20px;
+    color: #fff;
+    text-transform: none;
+    white-space: nowrap;
+    line-height: 1.4; /* ✅ reset line-height for dropdown items */
+}
+
+.desktop-nav .dropdown-menu li a:hover {
+    background: #2e2b2d;
+    color: #fff;
+}
+
+/* ─── MOBILE NAV ─── */
+.mobile-nav {
+    display: none;
 }
 
 .mobile-nav .nav-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    background-color: var(--color2);
+    padding: 0 20px;
+    background-color: var(--color2, #000);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 40;
+    min-height: 70px; /* ✅ taller mobile navbar */
 }
 
-.mobile-nav .logo img {
-    width: 150px; /* Adjust logo size for mobile view */
+.mobile-nav .nav-bar.scrolled {
+    background-color: black;
 }
 
-.menu-toggle, .close-menu {
-    display: none;
+/* ✅ replaced .mobile-nav .logo img with .logo-img class */
+.mobile-nav .logo-img {
+    width: 160px;
+    height: auto;
+}
+
+/* ─── TOGGLE & CLOSE BUTTONS ─── */
+.menu-toggle,
+.close-menu {
+    background: none;
+    border: none;
     font-size: 1.5rem;
     color: white;
     cursor: pointer;
-    transition: opacity 0.3s ease;
+    padding: 8px;
+    line-height: 1;
+    z-index: 50;
+    display: none;
+    /* ✅ removed position:absolute — flexbox handles positioning now */
 }
 
-/* Close Button */
-.close-menu {
-    display: none; /* Hidden by default */
-    font-size: 1.5rem;
-    color: white;
-    position: absolute;
-    top: 12px;
-    right: 20px;
-    z-index: 50; /* Ensure the close button is above the sidebar */
+.menu-toggle:focus,
+.close-menu:focus {
+    outline: 2px solid #f16ab5;
+    outline-offset: 2px;
+    border-radius: 4px;
 }
 
-/* Toggle Button */
-.menu-toggle {
-    display: block; /* Show by default */
-    font-size: 1.5rem;
-    color: white;
-    position: absolute;
-    top: 12px;
-    right: 20px;
-    z-index: 40; /* Ensure the toggle button is above other content */
+/* ─── JS visibility helper ─── */
+.is-hidden {
+    display: none !important;
 }
 
+/* ─── MOBILE MENU SIDEBAR ─── */
 .mobile-nav .menu {
     display: none;
     flex-direction: column;
@@ -186,15 +171,15 @@
     list-style: none;
     top: 0;
     left: 0;
-    width: 400px;
+    width: 320px;
     height: 100vh;
-    background-color: black;
+    background-color: #000;
     overflow-y: auto;
-    transition: transform 0.3s ease;
     z-index: 30;
     align-items: center;
+    padding: 0;
+    margin: 0;
 }
-
 
 .mobile-nav .menu.show-menu {
     display: flex;
@@ -203,32 +188,99 @@
 .mobile-nav .menu li {
     margin-top: 55px;
     padding: 10px;
-    width: 100%; /* Ensure each menu item takes the full width */
-    text-align: center; /* Center the text */
+    width: 100%;
+    text-align: center;
 }
 
 .mobile-nav .menu li a {
-    color: white;
-    text-align: left; /* Ensure text is centered */
-    display: block; /* Make sure the links take up the full space */
+    color: #fff;
+    text-align: left;
+    display: block;
+    text-decoration: none;
 }
 
 .mobile-nav .menu .dropdown-menu {
     display: none;
     position: relative;
     left: 0;
-    background-color: rgba(241, 106, 181, 0.767);
+    background-color: rgba(19, 18, 18, 0.767);
     z-index: 50;
+    list-style: none;
+    padding: 0;
 }
 
-.mobile-nav .menu .dropdown-menu li{
-    padding: 10px;
-}
-
-.mobile-nav .menu li:hover .dropdown-menu{
+.mobile-nav .menu .dropdown-menu.show {
     display: block;
 }
 
+.mobile-nav .menu .dropdown-menu li {
+    padding: 10px;
+    margin-top: 0;
+}
+
+.mobile-nav .menu .dropdown-menu a {
+    color: #fff;
+    text-align: left;
+}
+
+.mobile-nav .dropdown-menu a:hover {
+    background: #2e2b2d;
+    color: #fff;
+}
+
+/* ─── SEARCH FORM ─── */
+.search-form {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    outline: none;
+    padding: 4px;
+}
+
+.search-icon-btn:focus {
+    outline: 2px solid #f16ab5;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.search-input {
+    height: 36px;
+    margin-left: 8px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    background-color: #222;
+    color: white;
+    width: 200px;
+    transition: width 0.3s ease;
+}
+
+.search-input:focus {
+    background-color: #333;
+    border: 1px solid #f16ab5;
+}
+
+.search-submit-btn {
+    background-color: #f16ab5;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    margin-left: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
     .desktop-nav {
         display: none;
@@ -239,30 +291,23 @@
     }
 
     .menu-toggle {
-        display: block;
+        display: block; /* shown by default on mobile */
     }
 
     .close-menu {
-        display: none;
+        display: none; /* hidden by default, JS shows it */
     }
 
-    .mobile-nav .menu.show-menu .menu-toggle {
-        display: none;
-    }
-
-    .mobile-nav .menu.show-menu .close-menu {
-        display: block;
+    .search-input {
+        width: 150px;
     }
 }
 
-
-/* Responsive Adjustments */
 @media (max-width: 1000px) {
     .hero .block h1 {
-        font-size: 5.5vw; /* Adjust font size for large tablets */
-        max-width: 80%; /* Ensure text still wraps on smaller screens */
+        font-size: 5.5vw;
+        max-width: 80%;
     }
-
     .hero .btn-primary {
         font-size: 1.1rem;
     }
@@ -270,10 +315,9 @@
 
 @media (max-width: 992px) {
     .hero .block h1 {
-        font-size: 6vw; /* Adjust font size for medium devices */
-        max-width: 80%; /* Adjust wrapping for medium screens */
+        font-size: 6vw;
+        max-width: 80%;
     }
-
     .hero .btn-primary {
         font-size: 1rem;
     }
@@ -281,98 +325,21 @@
 
 @media (max-width: 768px) {
     .hero .block h1 {
-        font-size: 8vw; /* Smaller heading for smaller screens */
-        max-width: 90%; /* More text wrapping for smaller screens */
+        font-size: 8vw;
+        max-width: 90%;
     }
-
     .hero .btn-primary {
         font-size: 0.9rem;
-        padding: 8px 16px; /* Adjust button size */
+        padding: 8px 16px;
     }
 }
 
 @media (max-width: 500px) {
     .hero .block h1 {
-        font-size: 8vw; /* Larger but still proportional on small devices */
+        font-size: 8vw;
     }
-
     .hero .btn-primary {
         font-size: 0.8rem;
-        padding: 6px 12px; /* Adjust button size */
+        padding: 6px 12px;
     }
-}
-        /* WhatsApp Button CSS */
-        .whatsapp-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #25D366; /* WhatsApp green color */
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 50px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-            text-decoration: none;
-            z-index: 1000; /* Ensure it stays on top */
-        }
-        .whatsapp-button img {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-        }
-
-
-.search-form {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-icon-btn {
-  background: transparent;
-  border: none;
-  color: white;
-  cursor: pointer;
-  outline: none;
-}
-
-.search-input {
-  height: 36px;
-  margin-left: 8px;
-  padding: 6px 12px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 4px;
-  outline: none;
-  background-color: #222;
-  color: white;
-  width: 200px;
-  transition: width 0.3s ease;
-}
-
-.search-submit-btn {
-  background-color: #f16ab5;
-  border: none;
-  color: white;
-  padding: 6px 12px;
-  margin-left: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-/* Optional: focus style */
-.search-input:focus {
-  background-color: #333;
-  border: 1px solid #f16ab5;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .search-input {
-    width: 150px;
-  }
 }

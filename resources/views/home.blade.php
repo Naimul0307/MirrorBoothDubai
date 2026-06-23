@@ -1,29 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
-{{-- <section class="hero">
-    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <video autoplay muted loop playsinline src="{{ asset('assets/images/video/videos1.mp4') }}" type="video/mp4" async></video>
-                <div class="hero-background-overlay"></div>
-                <div class="container">
-                    <div class="row align-items-center justify-content-center h-100">
-                        <div class="col-md-7 text-center">
-                            <div class="block">
-                                <h1 class="mb-3 mt-3">PHOTOBOOTH INTERACTIVE ENTERTAINMENT EXPERIENCES</h1>
-                                <div class="btn-container">
-                                    <a href="{{ route('contact') }}" class="btn btn-primary">Contact Now <i class="icofont-simple-right ml-2"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section> --}}
 <section class="hero">
     <div id="carouselExampleControls"
          class="carousel slide carousel-fade"
@@ -31,32 +8,31 @@
          data-bs-interval="4000">
 
         <div class="carousel-inner">
-
             @foreach($heroSlides as $key => $slide)
                 <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+
                     <img
                         src="{{ asset('uploads/hero_slides/thumb/large/'.$slide->image) }}"
-                        class="d-block w-100 hero-slide-img"
+                        class="hero-slide-img"
                         alt="{{ $slide->name ?? 'Mirror Booth Dubai' }}"
                         loading="lazy">
+
                     <div class="hero-background-overlay"></div>
 
-                    <div class="container">
-                        <div class="row align-items-center justify-content-center h-100">
-                            <div class="col-md-8 text-center">
-
-                                <div class="block">
-                                    <h1 class="mb-3 mt-3">PHOTOBOOTH INTERACTIVE ENTERTAINMENT EXPERIENCES</h1>
+                    <div class="hero-content">
+                        <div class="container h-100">
+                            <div class="row align-items-center justify-content-center h-100">
+                                <div class="col-md-8 col-10 text-center">
+                                    <h1>PHOTOBOOTH INTERACTIVE ENTERTAINMENT EXPERIENCES</h1>
                                 </div>
-
                             </div>
                         </div>
                     </div>
 
                 </div>
             @endforeach
-
         </div>
+
     </div>
 </section>
 <section class="section-2 py-5">

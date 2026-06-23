@@ -16,32 +16,29 @@
             </p>
         </div>
 
-        <div class="cards">
-            <div class="services-slider">
+        <div class="reviews-slider">
 
-                @foreach($reviews as $review)
+            @foreach($reviews as $review)
 
-                    @if(!empty($review->image))
+                @if(!empty($review->image))
+
+                    <div class="px-2">
 
                         <div class="supporter-logo">
 
                             <img
                                 src="{{ asset('uploads/reviews/thumb/large/' . $review->image) }}"
                                 class="img-fluid"
-                                alt="{{ $review->name }}"
-                                loading="lazy"
-                                decoding="async"
-                                width="250"
-                                height="250"
-                            >
+                                alt="{{ $review->name }}">
 
                         </div>
 
-                    @endif
+                    </div>
 
-                @endforeach
+                @endif
 
-            </div>
+            @endforeach
+
         </div>
 
     </div>

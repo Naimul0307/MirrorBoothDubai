@@ -88,16 +88,16 @@
            <div class="col-md-6 col-12">
             @php
                 $videoId = null;
-        
+
                 if (!empty($service->videos_link)) {
                     $url = $service->videos_link;
-        
+
                     if (preg_match('/(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $url, $matches)) {
                         $videoId = $matches[1];
                     }
                 }
             @endphp
-        
+
             @if(!empty($videoId))
                 <div class="image-red-background video-wrapper">
                     <iframe class="responsive-iframe" src="https://www.youtube.com/embed/{{ $videoId }}" frameborder="0" allowfullscreen></iframe>
@@ -109,13 +109,13 @@
             @endif
         </div>
 
-                    
+
             <div class="col-md-6 col-12 d-flex align-items-center">
                 <div>
                     {!! $service->description !!}
                 </div>
             </div>
-{{--             
+{{--
             <div class="col-md-6 col-12 d-flex align-items-center">
                 <div class="about-block text-center text-md-left">
                     {!! $service->description !!}
@@ -179,7 +179,12 @@
 @endif
 
 
-@include('common.review')
+@include('common.review', [
+    'reviews'      => [],
+    'rating'       => 5.0,
+    'totalReviews' => 0,
+    'businessName' => 'Mirror Booth Dubai',
+])
 @include('common.company')
 
 @endsection

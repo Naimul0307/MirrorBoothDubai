@@ -7,21 +7,15 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 use App\Models\WorkingCompany;
-use App\Models\Review;
+use App\Services\GoogleReviewsService;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         // Force HTTPS
@@ -38,29 +32,23 @@ class AppServiceProvider extends ServiceProvider
 
         // Company View Composer
         View::composer('common.company', function ($view) {
-
             $companies = Cache::remember('common_companies', 3600, function () {
-
                 return WorkingCompany::where('status', 1)
                     ->select('id', 'name', 'image')
                     ->get();
-
             });
-
             $view->with('companies', $companies);
         });
 
+        // Google Reviews View Composer
         View::composer('common.review', function ($view) {
+            $googleReviews = app(GoogleReviewsService::class);
+            $data = $googleReviews->getReviews();
 
-            $reviews = Cache::remember('common_reviews', 3600, function () {
-
-                return Review::where('status', 1)
-                    ->select('id', 'name', 'image')
-                    ->get();
-
-            });
-
-            $view->with('reviews', $reviews);
+            $view->with('reviews',      $data['reviews']      ?? []);
+            $view->with('rating',       $data['rating']       ?? 5.0);
+            $view->with('totalReviews', $data['totalReviews'] ?? 0);
+            $view->with('businessName', $data['businessName'] ?? 'Mirror Booth Dubai');
         });
     }
 }

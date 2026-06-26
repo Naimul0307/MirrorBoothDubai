@@ -54,7 +54,12 @@
 
 @include('common.services')
 
-@include('common.review')
+@include('common.review', [
+    'reviews'      => [],
+    'rating'       => 5.0,
+    'totalReviews' => 0,
+    'businessName' => 'Mirror Booth Dubai',
+])
 
 @include('common.company')
 

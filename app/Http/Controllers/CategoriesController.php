@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Review;
 use App\Models\Service;
 use App\Models\WorkingCompany;
 use Illuminate\Http\Request;
@@ -35,12 +34,9 @@ class CategoriesController extends Controller
         $data['services'] = $services;
         $data['categorySelected'] = $category->id;
         $data['companies'] = $companies;
-        $data['reviews'] = $reviews;
-
         $data['meta_title'] = $category->meta_title ?? $category->title;
         $data['meta_description'] = $category->meta_description ?? Str::limit(strip_tags($category->description), 150);
         $data['meta_keywords'] = $category->meta_keywords ?? 'MIRROR BOOTH, PHOTO BOOTH, VIDEOS BOOTH, MAGAZIN BOOTH, EVENT SERVICES, DUBAI, UAE';
-
 
         return view('category', $data);
     }

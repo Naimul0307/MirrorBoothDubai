@@ -26,12 +26,17 @@
             <div class="mt-5">
                 {!! $blog->description !!}
             </div>
-    
+
         </div>
     </div>
 </section>
 
-@include('common.review')
+@include('common.review', [
+    'reviews'      => [],
+    'rating'       => 5.0,
+    'totalReviews' => 0,
+    'businessName' => 'Mirror Booth Dubai',
+])
 
 
 @include('common.company')

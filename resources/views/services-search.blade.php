@@ -19,9 +19,9 @@
             </div>
 
             <div class="text-muted">Award-Winning Photo Booth & Game Rentals in Dubai</div>
-            <p>A trusted name in the UAE, we offer over 80+ premium photo booths and interactive games, 
+            <p>A trusted name in the UAE, we offer over 80+ premium photo booths and interactive games,
                 <br>providing the most comprehensive range of services in the GCC.
-                <br>Renowned for our professionalism and reliability, we are dedicated to client satisfaction and event success. 
+                <br>Renowned for our professionalism and reliability, we are dedicated to client satisfaction and event success.
                 <br>Our goal is to craft memorable, branded experiences that elevate every occasion.
             </p>
         </div>
@@ -72,7 +72,12 @@
 </section>
 @endif
 
-@include('common.review', ['reviews' => $reviews])
+@include('common.review', [
+    'reviews'      => [],
+    'rating'       => 5.0,
+    'totalReviews' => 0,
+    'businessName' => 'Mirror Booth Dubai',
+])
 
 @include('common.company', ['companies' => $companies])
 

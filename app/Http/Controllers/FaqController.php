@@ -3,18 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Faq;
-use App\Models\Review;
 use App\Models\WorkingCompany;
 use Illuminate\Http\Request;
 
 class FaqController extends Controller
 {
     public function index() {
-        
-        $faq = Faq::orderBy('created_at','DESC')->where('status',1)->get();  
-        $companies = WorkingCompany::where('status', 1)->get();   
-        $reviews = Review::where('status', 1)->get();
 
+        $faq = Faq::orderBy('created_at','DESC')->where('status',1)->get();
+        $companies = WorkingCompany::where('status', 1)->get();
         return view('faq',[
             'faq' => $faq,
             'companies' => $companies,

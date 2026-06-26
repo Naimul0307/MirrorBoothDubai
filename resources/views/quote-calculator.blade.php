@@ -295,8 +295,14 @@ window.quotePdfData = {
 };
 </script>
 
+@push('extraJs')
+<script src="{{ asset('assets/js/tom-select.complete.min.js') }}" defer></script>
+<script src="{{ asset('assets/js/jspdf.umd.min.js') }}" defer></script>
+<script src="{{ asset('assets/js/jspdf.plugin.autotable.min.js') }}" defer></script>
+
 <script src="{{ asset('assets/js/quote-calculator.js') }}"></script>
 <script src="{{ asset('assets/js/quote-pdf.js') }}"></script>
+@endpush
 @endsection
 
 

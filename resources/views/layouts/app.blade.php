@@ -12,28 +12,23 @@
         <meta name="keywords" content="{{ $meta_keywords ?? 'Default, Keywords' }}">
         <meta name="_token" content="{{ csrf_token() }}">
 
-        {{-- Favicons --}}
         <link rel="shortcut icon" href="{{ asset('assets/favicon.ico') }}" type="image/x-icon">
         <link rel="apple-touch-icon" href="{{ asset('assets/apple-touch-icon.png') }}" sizes="180x180">
         <link rel="icon" href="{{ asset('assets/android-chrome-192x192.png') }}" sizes="192x192" type="image/png">
         <link rel="icon" href="{{ asset('assets/android-chrome-512x512.png') }}" sizes="512x512" type="image/png">
 
-        {{-- Critical CSS --}}
-        <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/navebar.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/fontawesome/css/all.min.css') }}">
+        <!-- Main CSS -->
+        <link rel="stylesheet" href="{{ asset('assets/css/all-styles.min.css') }}">
 
-        {{-- Non-critical CSS deferred --}}
-        <link rel="preload" href="{{ asset('assets/css/slick.min.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="{{ asset('assets/css/slick.min.css') }}"></noscript>
+        <!-- FontAwesome async -->
+        <link rel="preload" href="{{ asset('assets/fontawesome/css/fontawesome.min.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="{{ asset('assets/fontawesome/css/fontawesome.min.css') }}"></noscript>
 
-        <link rel="preload" href="{{ asset('assets/css/tom-select.main.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="{{ asset('assets/css/tom-select.main.css') }}"></noscript>
+        <link rel="preload" href="{{ asset('assets/fontawesome/css/solid.min.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="{{ asset('assets/fontawesome/css/solid.min.css') }}"></noscript>
 
-        <link rel="preconnect" href="https://cloud.fotomaster.com">
-        <link rel="preload" as="image" href="{{ asset('assets/images/logo.webp') }}">
+        <link rel="preload" href="{{ asset('assets/fontawesome/css/brands.min.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="{{ asset('assets/fontawesome/css/brands.min.css') }}"></noscript>
 
         @yield('extraCss')
     </head>
@@ -41,12 +36,12 @@
 <body id="top">
     <header>
 
-        {{-- ─── DESKTOP NAV ─── --}}
+
         <nav class="desktop-nav" aria-label="Desktop navigation">
             <div class="nav-bar">
                 <div class="logo">
                     <a href="{{ route('home') }}">
-                        {{-- ✅ removed height attribute — CSS controls height:auto --}}
+
                         <img src='{{ asset("assets/images/logo.webp") }}'
                              alt='Mirror Booth Dubai Logo'
                              class="logo-img"
@@ -85,12 +80,12 @@
             </div>
         </nav>
 
-        {{-- ─── MOBILE NAV ─── --}}
+
         <nav class="mobile-nav" aria-label="Mobile navigation">
             <div class="nav-bar">
                 <div class="logo">
                     <a href="{{ route('home') }}">
-                        {{-- ✅ removed height attribute --}}
+
                         <img src='{{ asset("assets/images/logo.webp") }}'
                              alt='Mirror Booth Dubai Logo'
                              class="logo-img"
@@ -138,7 +133,7 @@
 
     </header>
 
-    {{-- WhatsApp Float Button --}}
+
     <a href="https://wa.me/971502664501?text=Hello%20there!" class="whatsapp-button" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">
         <img src="{{ asset('uploads/WhatsApp.svg') }}" alt="" width="24" height="24" aria-hidden="true">
         Chat with us
@@ -148,7 +143,7 @@
         @yield('content')
     </main>
 
-    {{-- ─── FOOTER ─── --}}
+
     <footer class="footer section gray-bg" aria-label="Site footer">
         <div class="container">
             <div class="row">
@@ -286,9 +281,6 @@
     <script src="{{ asset('assets/js/custom.js') }}" defer></script>
     <script src="{{ asset('assets/js/disableRightClick.js') }}" defer></script>
     <script src="{{ asset('assets/js/nav-bar.js') }}" defer></script>
-    <script src="{{ asset('assets/js/jspdf.umd.min.js') }}" defer></script>
-    <script src="{{ asset('assets/js/jspdf.plugin.autotable.min.js') }}" defer></script>
-    <script src="{{ asset('assets/js/tom-select.complete.min.js') }}" defer></script>
 
     <script>
     $(document).ready(function () {
@@ -300,5 +292,6 @@
     });
     </script>
 
-    @yield('extraJs')
+    @stack('extraJs')
+</body>
 </html>

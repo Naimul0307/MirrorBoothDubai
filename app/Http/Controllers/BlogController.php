@@ -13,8 +13,6 @@ class BlogController extends Controller
 
         $blogs = Blog::where('status',1)->orderBy('created_at','DESC')->get();
         $companies = WorkingCompany::where('status', 1)->get();
-        $reviews = Review::where('status', 1)->get();
-
         $data['meta_title'] = 'All BLOG | MIRROR BOOTH EVENT SERVICES L.L.C.-DUBAI';
         $data['meta_description'] = 'EXPLORE OUR FULL RANGE OF PROFESSIONAL EVENT SERVICES IN DUBAI,UAE';
         $data['meta_keywords'] = 'MIRROR BOOTH, PHOTO BOOTH, VIDEOS BOOTH, MAGAZIN BOOTH, EVENT SERVICES, MIRROR BOOTH EVENT SERVICES L.L.C, DUBAI, UAE';

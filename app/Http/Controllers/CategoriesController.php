@@ -28,7 +28,6 @@ class CategoriesController extends Controller
                             ->paginate(100);
 
         $companies = WorkingCompany::where('status', 1)->get();
-        $reviews = Review::where('status', 1)->get();
 
         $data['category'] = $category;
         $data['services'] = $services;
